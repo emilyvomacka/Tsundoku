@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Tsundoku</string>
+    <string-array name="programming_languages">
+        <item>c++</item>
+        <item>java</item>
+        <item>javascript</item>
+        <item>kotlin</item>
+        <item>ruby</item>
+        <item>python</item>
+    </string-array>
+
+    <string-array name="desc">
+        <item>"Description"</item>
+        <item>"Description"</item>
+        <item>"Description"</item>
+        <item>"Description"</item>
+        <item>"Description"</item>
+        <item>"Description"</item>
+    </string-array>
 </resources>
