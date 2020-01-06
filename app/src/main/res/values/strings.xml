@@ -2,6 +2,7 @@
     <string name="app_name">Tsundoku</string>
     <string name="enter_title">Edit Title</string>
     <string name="enter_desc">Enter description</string>
+    <string name="save">Save New Book</string>
     <string-array name="programming_languages">
         <item>Great New Book</item>
         <item>Book I bought last year</item>

@@ -10,7 +10,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="489dp" />
+        android:layout_height="391dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -29,6 +29,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/edit_text_desc"
         android:hint="@string/enter_desc" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/save_button"
+        android:text="@string/save" />
 
 </LinearLayout>
 

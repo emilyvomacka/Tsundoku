@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+
 
 
 android {
@@ -35,4 +35,5 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 }
 
+apply plugin: 'com.google.gms.google-services'
 googleServices.disableVersionCheck = true;
