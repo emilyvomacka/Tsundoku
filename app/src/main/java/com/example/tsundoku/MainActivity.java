@@ -6,14 +6,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-import java.lang.reflect.Array;
-
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
     String s1[], s2[];
-    int images[] = { R.drawable.book, R.drawable.book2, R.drawable.book3, R.drawable.book4, R.drawable.book5, R.drawable.book6 };
+    int images[] = { R.drawable.book, R.drawable.book, R.drawable.book, R.drawable.book,
+            R.drawable.book, R.drawable.book };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
