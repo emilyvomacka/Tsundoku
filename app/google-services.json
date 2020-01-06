@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "516756232107-uq2ujb2n2tdf2s0vmt58hjlbq40cmt1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tsundoku",
+            "certificate_hash": "ac3c7a987cc3e44d4804da8c04473a766e76a31a"
+          }
+        },
+        {
           "client_id": "516756232107-bn7dom2o1qhtgnveur0c3joms38n0dtr.apps.googleusercontent.com",
           "client_type": 3
         }
