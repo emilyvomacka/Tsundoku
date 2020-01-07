@@ -3,6 +3,7 @@
     <string name="enter_title">Edit Title</string>
     <string name="enter_desc">Enter description</string>
     <string name="save">Save New Book</string>
+    <string name="show_data">Show Data</string>
     <string-array name="programming_languages">
         <item>Great New Book</item>
         <item>Book I bought last year</item>

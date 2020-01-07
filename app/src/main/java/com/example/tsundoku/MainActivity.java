@@ -11,10 +11,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText enterTitle;
     private EditText enterDesc;
     private Button saveButton;
+    private Button showButton;
+    private TextView recBook, recDesc;
 
     //Keys
     public static final String KEY_TITLE = "title";
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Connection to Firestore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference bookRef = db.collection("Unread Books").document("First Book");
 
     RecyclerView recyclerView;
 
@@ -54,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         enterTitle = findViewById(R.id.edit_text_title);
         enterDesc = findViewById(R.id.edit_text_desc);
+        showButton = findViewById(R.id.show_data);
+        recBook = findViewById(R.id.rec_book);
+        recDesc = findViewById(R.id.rec_desc);
 
         s1 = getResources().getStringArray(R.array.programming_languages);
         s2 = getResources().getStringArray(R.array.desc);
@@ -84,6 +93,34 @@ public class MainActivity extends AppCompatActivity {
                 });
         //end firestore tutorial
 
+        showButton.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                        bookRef.get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                       if (documentSnapshot.exists()) {
+                                            String title = documentSnapshot.getString(KEY_TITLE);
+                                            String desc = documentSnapshot.getString(KEY_DESC);
+                                            recBook.setText(title);
+                                            recDesc.setText(desc);
+                                       } else {
+                                           Toast.makeText(MainActivity.this, "No data exists",
+                                           Toast.LENGTH_LONG);
+                                       }
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "onFailure: " + e.toString());
+                                    }
+                                });
+                  }
+              }
+        );
+
         saveButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
@@ -95,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     data.put(KEY_DESC, description);
 
                     db.collection("Unread Books")
-                            .document("First Book")
+                            .document("Second Book")
                             .set(data)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

@@ -10,12 +10,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="391dp" />
+        android:layout_height="237dp" />
 
     <TextView
+        android:id="@+id/add_book"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/add_book"
         android:text="Add a New Unread Book" />
 
     <EditText
@@ -35,6 +35,23 @@
         android:layout_height="wrap_content"
         android:id="@+id/save_button"
         android:text="@string/save" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_data"
+        android:text="@string/show_data" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rec_book" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rec_desc" />
+
 
 </LinearLayout>
 
