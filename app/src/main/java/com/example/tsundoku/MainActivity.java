@@ -1,6 +1,7 @@
 package com.example.tsundoku;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,9 +15,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +61,28 @@ public class MainActivity extends AppCompatActivity {
         MyAdapter myAdapter = new MyAdapter(this, s1, s2, images);
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //from firestore tutorial
+        db.collection("Unread Books")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        List<String> unreadBooks = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : value) {
+                            if (doc.get("title") != null) {
+                                unreadBooks.add(doc.getString("title"));
+                            }
+                        }
+                        Log.d(TAG, "Unread books: " + unreadBooks);
+                    }
+                });
+        //end firestore tutorial
 
         saveButton.setOnClickListener(new View.OnClickListener() {
               @Override
