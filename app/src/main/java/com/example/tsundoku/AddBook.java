@@ -41,33 +41,37 @@ public class AddBook extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("DEBUG", "entered onClick method");
                 String title = enterTitle.getText().toString().trim();
                 String description = enterDesc.getText().toString().trim();
 
                 Map<String, Object> data = new HashMap<>();
                 data.put(KEY_TITLE, title);
                 data.put(KEY_DESC, description);
+                Log.d("DEBUG", "data is " + data.toString());
+
+                if (db != null) {
+                    Log.d("DEBUG", "db exists: " + db);
+                }
 
                 db.collection("Unread Books")
-                        .document("Third Book")
-                        .set(data)
+                    .document("Second Book")
+                    .set(data)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(AddBook.this,  "Success!", Toast.LENGTH_LONG).show();
-                                Log.d("DEBUG", "Added book from AddBookClass!");
-                            }
-                        })
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(AddBook.this, "Success! Book added from AddBook",
+                                    Toast.LENGTH_LONG).show();
+                            Log.d("DEBUG", "Added book from AddBookClass!");
+                        }
+                    })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d("DEBUG", "onFailure: " + e.toString());
                             }
-                        });
+                    });
             }
         });
-
     }
-
-
 }

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Connection to Firestore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private DocumentReference bookRef = db.collection("Unread Books").document("First Book");
+
 
     RecyclerView recyclerView;
 
@@ -56,28 +56,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        //from firestore tutorial
-        db.collection("Unread Books")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("Debug", "Listen failed.", e);
-                            return;
-                        }
-
-                        List<String> unreadBooks = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : value) {
-                            if (doc.get("title") != null) {
-                                unreadBooks.add(doc.getString("title"));
-                            }
-                        }
-                        Log.d("Debug", "Unread books: " + unreadBooks);
-                    }
-                });
-        //end firestore tutorial
-
         addBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,5 +64,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //updating snapshot from firestore tutorial
+        db.collection("Unread Books")
+                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot dbBooks,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Toast.makeText(MainActivity.this, "Something Went Wrong",
+                                    Toast.LENGTH_LONG).show();
+                            Log.w("Debug", "Listen failed.", e);
+                            return;
+                        }
+
+                        List<String> unreadBooks = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : dbBooks) {
+                            if (doc.get("title") != null) {
+                                unreadBooks.add(doc.getString("title"));
+                            }
+                        }
+
+                        Toast.makeText(MainActivity.this, "Snapshot created",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+        //end firestore tutorial
+    }
+
 
 }
