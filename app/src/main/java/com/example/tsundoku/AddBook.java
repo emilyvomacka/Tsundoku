@@ -55,7 +55,7 @@ public class AddBook extends AppCompatActivity {
                 }
 
                 db.collection("Unread Books")
-                    .document("Second Book")
+                    .document("Third Book")
                     .set(data)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
