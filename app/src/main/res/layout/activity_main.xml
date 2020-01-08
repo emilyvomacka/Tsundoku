@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,48 +11,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="237dp" />
-
-    <TextView
-        android:id="@+id/add_book"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add a New Unread Book" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/edit_text_title"
-        android:hint="@string/enter_title" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/edit_text_desc"
-        android:hint="@string/enter_desc" />
+        android:layout_height="wrap_content" />
 
     <Button
+        android:id="@+id/button_add_book"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/save_button"
-        android:text="@string/save" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/show_data"
-        android:text="@string/show_data" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rec_book" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rec_desc" />
-
+        android:text="Add A New Unread Book" />
 
 </LinearLayout>
 
