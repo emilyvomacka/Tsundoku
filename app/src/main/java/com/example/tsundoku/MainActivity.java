@@ -68,12 +68,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        final String[] bookTitles = new String[100];
+        final String[] bookDescriptions = new String[100];
+
         //updating snapshot from firestore tutorial
         db.collection("Unread Books")
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot dbBooks,
                                         @Nullable FirebaseFirestoreException e) {
+
+                        int titleCounter = 0;
+                        int descriptionCounter = 0;
 
                         if (e != null) {
                             Toast.makeText(MainActivity.this, "Something Went Wrong",
@@ -82,19 +88,26 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        List<String> unreadBooks = new ArrayList<>();
+//                        List<String> unreadBooks = new ArrayList<>();
 
                         for (QueryDocumentSnapshot doc : dbBooks) {
                             if (doc.get("title") != null) {
-                                unreadBooks.add(doc.getString("title"));
-                                Log.d("DEBUG", "got another book " + doc.getId());
+                                bookTitles[titleCounter] = (doc.getString("title"));
+                                titleCounter++;
+                                Log.d("DEBUG", "BOOK TITLE: " + doc.getString("title"));
+                            }
+                            if (doc.get("description") != null) {
+                                bookDescriptions[descriptionCounter] = (doc.getString(
+                                        "description"));
+                                descriptionCounter++;
+                                Log.d("DEBUG", "BOOK DESCRIPTION: " + doc.getString("description"));
                             }
                         }
 
                         Toast.makeText(MainActivity.this, "Snapshot created",
                                 Toast.LENGTH_LONG).show();
-                        Log.d("DEBUG", "Unread books are " + unreadBooks);
-                    }
+
+                        
                 });
         //end firestore tutorial
     }
