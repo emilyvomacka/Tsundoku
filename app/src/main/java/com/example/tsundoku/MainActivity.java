@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -32,10 +34,14 @@ public class MainActivity extends AppCompatActivity {
     private Button addBookButton;
 
     //Connection to Firestore
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
-    RecyclerView recyclerView;
+    private List<Book> bookList;
+    private RecyclerView recyclerView;
+    private MyAdapter myAdapter;
+    private CollectionReference unreadBooks = db.collection("Unread Books");
 
     String s1[], s2[];
     int images[] = { R.drawable.book, R.drawable.book, R.drawable.book, R.drawable.book,
@@ -46,14 +52,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recyclerView);
+
         addBookButton = findViewById(R.id.button_add_book);
 
-        s1 = getResources().getStringArray(R.array.programming_languages);
-        s2 = getResources().getStringArray(R.array.desc);
-
-        MyAdapter myAdapter = new MyAdapter(this, s1, s2, images);
-        recyclerView.setAdapter(myAdapter);
+        bookList = new ArrayList<>();
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         addBookButton.setOnClickListener(new View.OnClickListener() {
@@ -68,18 +71,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        final String[] bookTitles = new String[100];
-        final String[] bookDescriptions = new String[100];
 
-        //updating snapshot from firestore tutorial
         db.collection("Unread Books")
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot dbBooks,
                                         @Nullable FirebaseFirestoreException e) {
-
-                        int titleCounter = 0;
-                        int descriptionCounter = 0;
 
                         if (e != null) {
                             Toast.makeText(MainActivity.this, "Something Went Wrong",
@@ -88,29 +85,28 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-//                        List<String> unreadBooks = new ArrayList<>();
+                        if (!dbBooks.isEmpty()) {
+                            for (QueryDocumentSnapshot doc : dbBooks) {
+                                if (doc.get("title") != null) {
+                                    Book book = doc.toObject(Book.class);
+                                    bookList.add(book);
+                                }
+                            }
 
-                        for (QueryDocumentSnapshot doc : dbBooks) {
-                            if (doc.get("title") != null) {
-                                bookTitles[titleCounter] = (doc.getString("title"));
-                                titleCounter++;
-                                Log.d("DEBUG", "BOOK TITLE: " + doc.getString("title"));
-                            }
-                            if (doc.get("description") != null) {
-                                bookDescriptions[descriptionCounter] = (doc.getString(
-                                        "description"));
-                                descriptionCounter++;
-                                Log.d("DEBUG", "BOOK DESCRIPTION: " + doc.getString("description"));
-                            }
+                            //invoke recyclerView
+                            myAdapter = new MyAdapter(MainActivity.this, bookList);
+                            recyclerView.setAdapter(myAdapter);
+                            myAdapter.notifyDataSetChanged();
+
+                            Toast.makeText(MainActivity.this, "Snapshot created",
+                                    Toast.LENGTH_LONG).show();
+
                         }
+                    }
 
-                        Toast.makeText(MainActivity.this, "Snapshot created",
-                                Toast.LENGTH_LONG).show();
-
-                        
                 });
-        //end firestore tutorial
+    }
+
     }
 
 
-}

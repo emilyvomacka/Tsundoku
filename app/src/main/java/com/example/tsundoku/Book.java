@@ -4,14 +4,16 @@ public class Book {
     private String title;
     private String author;
     private String description;
+    private String imageUrl;
 
     //We must have an empty constructor for Firestore
     public Book() { }
 
-    public Book(String title, String author, String description) {
+    public Book(String title, String author, String description, String imageUrl) {
         this.title = title;
         this.author = author;
         this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     public String getTitle() {
@@ -36,5 +38,13 @@ public class Book {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
