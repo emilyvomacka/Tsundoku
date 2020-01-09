@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot doc : dbBooks) {
                             if (doc.get("title") != null) {
                                 unreadBooks.add(doc.getString("title"));
+                                Log.d("DEBUG", "got another book " + doc.getId());
                             }
                         }
 
