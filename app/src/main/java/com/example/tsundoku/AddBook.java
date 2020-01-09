@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class AddBook extends AppCompatActivity {
     private Button saveButton;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference collectionReference = db.collection("Unread Books");
 
     public static final String KEY_TITLE = "title";
     public static final String KEY_DESC = "description";
@@ -41,37 +43,31 @@ public class AddBook extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DEBUG", "entered onClick method");
+                Log.d("DEBUG", "entered onClick Add Book method");
                 String title = enterTitle.getText().toString().trim();
                 String description = enterDesc.getText().toString().trim();
 
-                Map<String, Object> data = new HashMap<>();
-                data.put(KEY_TITLE, title);
-                data.put(KEY_DESC, description);
-                Log.d("DEBUG", "data is " + data.toString());
+                Book book = new Book();
+                book.setTitle(title);
+                book.setDescription(description);
 
-                if (db != null) {
-                    Log.d("DEBUG", "db exists: " + db);
-                }
-
-                db.collection("Unread Books")
-                    .document("Third Book")
-                    .set(data)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(AddBook.this, "Success! Book added from AddBook",
-                                    Toast.LENGTH_LONG).show();
-                            Log.d("DEBUG", "Added book from AddBookClass!");
-                        }
-                    })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d("DEBUG", "onFailure: " + e.toString());
-                            }
-                    });
+                collectionReference.add(book);
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                        @Override
+//                        public void onSuccess(Void aVoid) {
+//                            Toast.makeText(AddBook.this, "Success! Book added from AddBook",
+//                                    Toast.LENGTH_LONG).show();
+//                            Log.d("DEBUG", "Added book from AddBookClass!");
+//                        }
+//                    })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.d("DEBUG", "onFailure: " + e.toString());
+//                            }
+//                    });
             }
         });
     }
+
 }

@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         if (e != null) {
                             Toast.makeText(MainActivity.this, "Something Went Wrong",
                                     Toast.LENGTH_LONG).show();
-                            Log.w("Debug", "Listen failed.", e);
+                            Log.d("DEBUG", "Listen failed.", e);
                             return;
                         }
 
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast.makeText(MainActivity.this, "Snapshot created",
                                 Toast.LENGTH_LONG).show();
+                        Log.d("DEBUG", "Unread books are " + unreadBooks);
                     }
                 });
         //end firestore tutorial
