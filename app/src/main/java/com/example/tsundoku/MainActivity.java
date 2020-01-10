@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         addBookButton = findViewById(R.id.button_add_book);
 
         bookList = new ArrayList<>();
@@ -71,42 +70,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        db.collection("Unread Books")
-                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot dbBooks,
-                                        @Nullable FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Toast.makeText(MainActivity.this, "Something Went Wrong",
-                                    Toast.LENGTH_LONG).show();
-                            Log.d("DEBUG", "Listen failed.", e);
-                            return;
+            bookList.clear();
+            unreadBooks.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot dbBooks) {
+                    if (!dbBooks.isEmpty()) {
+                        for (QueryDocumentSnapshot doc : dbBooks) {
+                                Book book = doc.toObject(Book.class);
+                                bookList.add(book);
+                                Log.d("DEBUG", book.getTitle());
                         }
 
-                        if (!dbBooks.isEmpty()) {
-                            for (QueryDocumentSnapshot doc : dbBooks) {
-                                if (doc.get("title") != null) {
-                                    Book book = doc.toObject(Book.class);
-                                    bookList.add(book);
-                                }
-                            }
-
-                            //invoke recyclerView
-                            myAdapter = new MyAdapter(MainActivity.this, bookList);
-                            recyclerView.setAdapter(myAdapter);
-                            myAdapter.notifyDataSetChanged();
-
-                            Toast.makeText(MainActivity.this, "Snapshot created",
-                                    Toast.LENGTH_LONG).show();
-
-                        }
+                        myAdapter = new MyAdapter(MainActivity.this, bookList);
+                        recyclerView.setAdapter(myAdapter);
+//                        myAdapter.notifyDataSetChanged();
                     }
+                }
 
-                });
-    }
-
+            });
+        }
     }
 
 

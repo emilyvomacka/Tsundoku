@@ -47,7 +47,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         imageUrl = book.getImageUrl();
 
         //Use Picasso to download and show image
-
         Picasso.get()
                 .load(imageUrl)
                 .placeholder(R.drawable.book)

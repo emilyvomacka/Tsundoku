@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -52,9 +53,9 @@ public class AddBook extends AppCompatActivity {
                 book.setDescription(description);
 
                 collectionReference.add(book);
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
 //                        @Override
-//                        public void onSuccess(Void aVoid) {
+//                        public void onSuccess(DocumentReference documentReference) {
 //                            Toast.makeText(AddBook.this, "Success! Book added from AddBook",
 //                                    Toast.LENGTH_LONG).show();
 //                            Log.d("DEBUG", "Added book from AddBookClass!");
