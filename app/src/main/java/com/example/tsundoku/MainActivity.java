@@ -15,6 +15,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,33 +33,33 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
     private Button addBookButton;
-
-    //Connection to Firestore
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     private List<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference unreadBooks = db.collection("Unread Books");
 
-    String s1[], s2[];
-    int images[] = { R.drawable.book, R.drawable.book, R.drawable.book, R.drawable.book,
-            R.drawable.book, R.drawable.book };
+    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addBookButton = findViewById(R.id.button_add_book);
+        requestQueue = Volley.newRequestQueue(this);
 
+        addBookButton = findViewById(R.id.button_add_book);
         bookList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -65,6 +71,23 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://jsonplaceholder.typicode.com/todos/1", null,
+            new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.d("DEBUG", "onResponse: " + response);
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("DEBUG", "onErrorResponse: " + error.getMessage());
+                }
+        });
+        requestQueue.add(jsonObjectRequest);
     }
 
     @Override
