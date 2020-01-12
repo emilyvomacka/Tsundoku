@@ -44,9 +44,10 @@
             <TextView
                 android:id="@+id/myText2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_marginTop="31dp"
                 android:text="description"
+                android:ellipsize="end"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/myText1"
                 app:layout_constraintTop_toTopOf="@+id/myText1" />
