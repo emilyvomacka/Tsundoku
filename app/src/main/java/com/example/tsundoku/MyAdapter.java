@@ -1,6 +1,7 @@
 package com.example.tsundoku;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.description.setText(book.getDescription());
 
         imageUrl = book.getImageUrl();
+
+        Log.d("DEBUG",
+                "In Picasso image load, title is " + book.getTitle() + ", image url is " + book.getImageUrl() );
 
         //Use Picasso to download and show image
         Picasso.get()
