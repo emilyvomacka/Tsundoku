@@ -60,33 +60,45 @@ public class AddBook extends AppCompatActivity {
                 Log.d("DEBUG", "entered onClick Add Book method");
 
                 String enteredIsbn = enterIsbn.getText().toString().trim();
+                Log.d("DEBUG", "entered ISBN is " + enteredIsbn);
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                         "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                                "&key=" +
-                        BOOKS_TOKEN, null,
+                                "&key=" + BOOKS_TOKEN, null,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 try {
+                                    Log.d("DEBUG", "received response");
+
                                     JSONArray bookArray = response.getJSONArray("items");
+                                    Log.d("DEBUG", "bookArray is " + bookArray);
+
                                     JSONObject bookJSON = bookArray.getJSONObject(0);
+                                    Log.d("DEBUG", "bookJSON is " + bookJSON);
+
                                     JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
+                                    Log.d("DEBUG", "volumeInfo is " + volumeInfo);
 
                                     String parsedTitle = volumeInfo.getString("title");
+                                    Log.d("DEBUG", "parsedTitle is " + parsedTitle);
+
                                     JSONArray authorsArray = volumeInfo.getJSONArray("authors");
                                     String parsedAuthor = authorsArray.getString(0);
+                                    Log.d("DEBUG", "parsedAuthor is " + parsedAuthor);
+
                                     String parsedDescription = volumeInfo.getString("description");
+                                    Log.d("DEBUG", "parsedDescription is " + parsedDescription);
+
                                     JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                                    String parsedImageUrl =
-                                            imageLinks.getString("thumbnail");
+                                    String parsedImageUrl = imageLinks.getString("thumbnail");
+                                    Log.d("DEBUG", "parsedImage Url is " + parsedImageUrl);
+
                                     String parsedHttpsImageUrl =
-                                            parsedImageUrl.substring(0, 3) + "s" + parsedImageUrl.substring(4, -1);
+                                            parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
+                                    Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
 
-                                    Book newBook = new Book(parsedTitle, parsedAuthor,
-                                            parsedDescription, parsedHttpsImageUrl);
-
-                                    Log.d("DEBUG", "Author is: " + parsedAuthor);
+                                    Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
 
                                     collectionReference.add(newBook)
                                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -108,9 +120,6 @@ public class AddBook extends AppCompatActivity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-
-
 
                             }
                         },
