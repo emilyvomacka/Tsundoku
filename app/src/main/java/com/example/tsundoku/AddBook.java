@@ -44,7 +44,7 @@ public class AddBook extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_book);
 
-        enterTitle = findViewById(R.id.edit_text_title);
+//        enterTitle = findViewById(R.id.edit_text_title);
         enterIsbn = findViewById(R.id.enter_isbn);
         saveButton = findViewById(R.id.save_button);
         requestQueue = Volley.newRequestQueue(this);
