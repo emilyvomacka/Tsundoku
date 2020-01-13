@@ -103,7 +103,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                                 exc: Throwable?
                         ) {
                             val msg = "Photo capture failed: $message"
-                            Log.e("CameraXApp", msg, exc)
+                            Log.d("DEBUG", msg)
                             viewFinder.post {
                                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                             }
@@ -205,11 +205,11 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                 // [END set_detector_options]
 
                 // [START get_detector]
-                val detector = FirebaseVision.getInstance()
-                        .visionBarcodeDetector
+//                val detector = FirebaseVision.getInstance()
+//                        .visionBarcodeDetector
                 // Or, to specify the formats to recognize:
-                // val detector = FirebaseVision.getInstance()
-                //        .getVisionBarcodeDetector(options)
+                 val detector = FirebaseVision.getInstance()
+                        .getVisionBarcodeDetector(options)
                 // [END get_detector]
 
                 // [START run_detector]
