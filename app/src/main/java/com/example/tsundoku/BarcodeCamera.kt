@@ -33,6 +33,7 @@ private const val REQUEST_CODE_PERMISSIONS = 10
 // This is an array of all the permission specified in the manifest.
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
+
 class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +85,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                 .apply {
                     // We don't set a resolution for image capture; instead, we
                     // select a capture mode which will infer the appropriate
-                    // resolution based on aspect ration and requested mode
+                    // resolution based on aspect ratio and requested mode
                     setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY)
                 }.build()
 
@@ -120,8 +121,6 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                             }
                         }
                     })
-
-
         }
 
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
@@ -139,6 +138,11 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
         // If Android Studio complains about "this" being not a LifecycleOwner
         // try rebuilding the project or updating the appcompat dependency to
         // version 1.1.0 or higher.
+
+        // We have three different and totally independent components:
+        // The preview shows a stream of images from the phone's camera
+        // The imageCapture lies in wait and captures an image when you hit the button
+        // The analyzerUseCase analyzes the stream of images from the camera
         CameraX.bindToLifecycle(this, preview, imageCapture, analyzerUseCase)
     }
 
@@ -219,11 +223,16 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                 // [START run_detector]
                 val result = detector.detectInImage(image)
                         .addOnSuccessListener { barcodes ->
+
+                            val barcode_amount = barcodes.size
+                            Log.d("DEBUG", "onSuccess barcode listener, $barcode_amount barcodes detected")
+
                             // Task completed successfully
                             // [START_EXCLUDE]
                             // [START get_barcodes]
-                            Log.d("DEBUG", "api returned barcodes")
+
                             for (barcode in barcodes) {
+                                Log.d("DEBUG", "api returned barcodes: " + barcodes )
                                 val bounds = barcode.boundingBox
                                 val corners = barcode.cornerPoints
 
@@ -248,6 +257,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                             }
                             // [END get_barcodes]
                             // [END_EXCLUDE]
+                            // TODO: figure out why i'm not getting barcodes, close this activity
                         }
                         .addOnFailureListener {
                             Log.d("DEBUG", "barcode detection failed")
