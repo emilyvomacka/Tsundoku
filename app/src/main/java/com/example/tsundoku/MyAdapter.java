@@ -51,7 +51,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         //Use Picasso to download and show image
         Picasso.get()
                 .load(imageUrl)
-                .placeholder(R.drawable.book)
+                .placeholder(R.drawable.ic_add_book)
                 .fit()
                 .into(holder.coverImage);
     }
@@ -73,7 +73,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             title = itemView.findViewById(R.id.myText1);
             description = itemView.findViewById(R.id.myText2);
             coverImage = itemView.findViewById(R.id.myImageView);
-
         }
     }
 }

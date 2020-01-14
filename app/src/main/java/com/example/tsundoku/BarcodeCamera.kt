@@ -92,6 +92,9 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
         val imageCapture = ImageCapture(imageCaptureConfig)
 
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
+
+            Log.d("DEBUG", "entered onClick image capture method")
+
             val file = File(externalMediaDirs.first(),
                     "${System.currentTimeMillis()}.jpg")
 
@@ -115,9 +118,10 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                             viewFinder.post {
                                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                             }
-
                         }
                     })
+
+
         }
 
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
@@ -224,6 +228,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                                 val corners = barcode.cornerPoints
 
                                 val rawValue = barcode.rawValue
+                                Log.d("DEBUG", "raw value is $rawValue")
 
                                 val valueType = barcode.valueType
                                 // See API reference for complete list of supported types
