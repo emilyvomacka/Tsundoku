@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
-import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.camera.core.*
@@ -26,9 +25,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import java.io.File
 import java.util.concurrent.Executors
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_barcode_camera.*
-
 
 
 // This is an arbitrary number we are using to keep track of the permission
@@ -136,9 +132,11 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                     ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
 
+        val analyzer = BarcodeImageAnalyzer(this)
+
         // Build the image analysis use case and instantiate our analyzer
         val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
-            setAnalyzer(executor, BarcodeImageAnalyzer())
+            setAnalyzer(executor, analyzer)
         }
         // Bind use cases to lifecycle
         // If Android Studio complains about "this" being not a LifecycleOwner
@@ -193,7 +191,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
     }
 
 
-    private class BarcodeImageAnalyzer : Activity(), ImageAnalysis.Analyzer {
+    private class BarcodeImageAnalyzer(val barcodeCamera: BarcodeCamera) : ImageAnalysis.Analyzer {
 
         private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
             0 -> FirebaseVisionImageMetadata.ROTATION_0
@@ -207,7 +205,6 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
-                Log.d("DEBUG", "analyzer has an image")
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
                 // Pass image to an ML Kit Vision API
                 // ...
@@ -235,30 +232,28 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                     // Task completed successfully
                     // [START_EXCLUDE]
                     // [START get_barcodes]
-                    assert(barcodes.size == 1)
+                    if (barcodes.size == 1) {
 
-                    val barcode = barcodes[0]
+                        val barcode = barcodes[0]
 
-                    val rawValue = barcode.rawValue
-                    Log.d("DEBUG", "raw value is $rawValue")
+                        val rawValue = barcode.rawValue
+                        Log.d("DEBUG", "raw value is $rawValue")
 
-                    val valueType = barcode.valueType
-                    Log.d("DEBUG", "barcode value is $valueType")
-                    // See API reference for complete list of supported types
+                        val valueType = barcode.valueType
+                        Log.d("DEBUG", "barcode value is $valueType")
+                        // See API reference for complete list of supported types
 
-                    //success message
-                    val msg = "Success: ISBN detected"
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                    Thread.sleep(1000L)
+                        //attach isbn to intent
+                        val barcodeIntent = Intent()
+                        Log.d("DEBUG", "Intent initiated")
+                        barcodeIntent.putExtra("scannedIsbn", rawValue.toString())
+                        Log.d("DEBUG", "Intent putExtra ************************************************************")
 
-                    //attach isbn to intent
-                    val barcodeIntent = Intent()
-                    barcodeIntent.putExtra("scannedIsbn", rawValue.toString())
-
-                    // [END get_barcodes]
-                    // [END_EXCLUDE]
-                    setResult(Activity.RESULT_OK, barcodeIntent)
-                    finish()
+                        // [END get_barcodes]
+                        // [END_EXCLUDE]
+                        barcodeCamera.setResult(RESULT_OK, barcodeIntent)
+                        barcodeCamera.finish()
+                    }
                 }
                 .addOnFailureListener {
                     Log.d("DEBUG", "barcode detection failed")

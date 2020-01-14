@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference unreadBooks = db.collection("Unread Books");
+    private RequestQueue requestQueue;
+
 
     private final int REQUEST_CODE = 2;
 
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
+
+            requestQueue = Volley.newRequestQueue(this);
 
             if (requestCode == REQUEST_CODE) {
                 assert data != null;
@@ -151,11 +155,12 @@ public class MainActivity extends AppCompatActivity {
 
                         Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
 
-                        collectionReference.add(newBook)
+                        unreadBooks.add(newBook)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
                                     public void onSuccess(DocumentReference documentReference) {
-                                        Toast.makeText(AddBook.this, "Success! Book added from AddBook",
+                                        Toast.makeText(MainActivity.this, "Success! Book added " +
+                                                        "from AddBook",
                                                 Toast.LENGTH_LONG).show();
                                         Log.d("DEBUG", "Added book from AddBookClass!");
                                     }
