@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 android {
     compileSdkVersion 29
@@ -49,6 +50,7 @@ dependencies {
     def camerax_version = '1.0.0-alpha06'
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
+    def kotlin_version= KotlinCompilerVersion.VERSION
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.firebase:firebase-ml-vision:24.0.1'
 }

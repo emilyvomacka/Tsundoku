@@ -3,6 +3,8 @@ package com.example.tsundoku
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Size
 import android.graphics.Matrix
@@ -10,6 +12,7 @@ import android.util.Log
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
+import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.camera.core.*
@@ -23,6 +26,9 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import java.io.File
 import java.util.concurrent.Executors
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_barcode_camera.*
+
 
 
 // This is an arbitrary number we are using to keep track of the permission
@@ -187,7 +193,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
     }
 
 
-    private class BarcodeImageAnalyzer : ImageAnalysis.Analyzer {
+    private class BarcodeImageAnalyzer : Activity(), ImageAnalysis.Analyzer {
 
         private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
             0 -> FirebaseVisionImageMetadata.ROTATION_0
@@ -216,44 +222,47 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
 //                val detector = FirebaseVision.getInstance()
 //                        .visionBarcodeDetector
                 // Or, to specify the formats to recognize:
-                 val detector = FirebaseVision.getInstance()
+                val detector = FirebaseVision.getInstance()
                         .getVisionBarcodeDetector(options)
                 // [END get_detector]
 
                 // [START run_detector]
-                val result = detector.detectInImage(image)
-                        .addOnSuccessListener { barcodes ->
+                val result = detector.detectInImage(image).addOnSuccessListener { barcodes ->
 
-                            val barcode_amount = barcodes.size
-                            Log.d("DEBUG", "onSuccess barcode listener, $barcode_amount barcodes detected")
+                    val barcode_amount = barcodes.size
+                    Log.d("DEBUG", "onSuccess barcode listener, $barcode_amount barcodes detected")
 
-                            // Task completed successfully
-                            // [START_EXCLUDE]
-                            // [START get_barcodes]
+                    // Task completed successfully
+                    // [START_EXCLUDE]
+                    // [START get_barcodes]
+                    assert(barcodes.size == 1)
 
-                            for (barcode in barcodes) {
+                    val barcode = barcodes[0]
 
-                                val rawValue = barcode.rawValue
-                                Log.d("DEBUG", "raw value is $rawValue")
+                    val rawValue = barcode.rawValue
+                    Log.d("DEBUG", "raw value is $rawValue")
 
-                                val valueType = barcode.valueType
-                                Log.d("DEBUG", "barcode value is $valueType")
-                                // See API reference for complete list of supported types
+                    val valueType = barcode.valueType
+                    Log.d("DEBUG", "barcode value is $valueType")
+                    // See API reference for complete list of supported types
 
-                                if (valueType == 3) {
-                                    //attach isbn to intent
+                    //success message
+                    val msg = "Success: ISBN detected"
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    Thread.sleep(1000L)
 
-                                    //close activity 
+                    //attach isbn to intent
+                    val barcodeIntent = Intent()
+                    barcodeIntent.putExtra("scannedIsbn", rawValue.toString())
 
-                                }
-                            }
-                            // [END get_barcodes]
-                            // [END_EXCLUDE]
-                            // TODO: figure out why i'm not getting barcodes, close this activity
-                        }
-                        .addOnFailureListener {
-                            Log.d("DEBUG", "barcode detection failed")
-                        }
+                    // [END get_barcodes]
+                    // [END_EXCLUDE]
+                    setResult(Activity.RESULT_OK, barcodeIntent)
+                    finish()
+                }
+                .addOnFailureListener {
+                    Log.d("DEBUG", "barcode detection failed")
+                }
             }
         }
     }
