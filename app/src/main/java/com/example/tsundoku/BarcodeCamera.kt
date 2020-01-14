@@ -86,7 +86,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                     // We don't set a resolution for image capture; instead, we
                     // select a capture mode which will infer the appropriate
                     // resolution based on aspect ratio and requested mode
-                    setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY)
+                    setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY)
                 }.build()
 
         // Build the image capture use case and attach button click listener
@@ -232,27 +232,19 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
                             // [START get_barcodes]
 
                             for (barcode in barcodes) {
-                                Log.d("DEBUG", "api returned barcodes: " + barcodes )
-                                val bounds = barcode.boundingBox
-                                val corners = barcode.cornerPoints
 
                                 val rawValue = barcode.rawValue
                                 Log.d("DEBUG", "raw value is $rawValue")
 
                                 val valueType = barcode.valueType
+                                Log.d("DEBUG", "barcode value is $valueType")
                                 // See API reference for complete list of supported types
-                                when (valueType) {
-                                    FirebaseVisionBarcode.TYPE_WIFI -> {
-                                        val ssid = barcode.wifi!!.ssid
-                                        val password = barcode.wifi!!.password
-                                        val type = barcode.wifi!!.encryptionType
-                                    }
-                                    FirebaseVisionBarcode.TYPE_URL -> {
-                                        val title = barcode.url!!.title
-                                        val url = barcode.url!!.url
-                                        Log.d("DEBUG", "barcode title is " + title)
-                                        Log.d("DEBUG", "barcode url is " + url)
-                                    }
+
+                                if (valueType == 3) {
+                                    //attach isbn to intent
+
+                                    //close activity 
+
                                 }
                             }
                             // [END get_barcodes]
