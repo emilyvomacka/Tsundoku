@@ -7,13 +7,13 @@
         <item android:drawable="@android:color/white"/>
 
         <!-- Your product logo - 144dp color version of your app icon -->
-        <item>
+    <item
+        android:height="250dp"
+        android:width="300dp"
+        android:drawable="@drawable/logo_with_stack"
+        android:gravity="center">
+    </item>
 
-            <bitmap
-                android:src="@drawable/book_stack"
-                android:gravity="center"/>
-
-        </item>
 
     </layer-list>
 
