@@ -53,6 +53,7 @@ dependencies {
     def kotlin_version= KotlinCompilerVersion.VERSION
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.firebase:firebase-ml-vision:24.0.1'
+    implementation 'com.google.android.material:material:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
