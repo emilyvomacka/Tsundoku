@@ -23,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -44,7 +45,7 @@ import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button addBookButton;
+    private FloatingActionButton addBookButton;
     private List<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
@@ -60,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addBookButton = findViewById(R.id.button_add_book);
+        addBookButton = findViewById(R.id.fab);
         bookList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

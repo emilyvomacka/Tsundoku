@@ -8,6 +8,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/primaryLightColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,10 +20,9 @@
 
             <ImageView
                 android:id="@+id/myImageView"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
+                android:layout_width="50dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -38,6 +38,7 @@
                 android:text="title"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                android:textColor="@color/primaryTextColor"
                 app:layout_constraintStart_toEndOf="@+id/myImageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,6 +50,7 @@
                 android:text="description"
                 android:ellipsize="end"
                 android:textSize="16sp"
+                android:textColor="@color/primaryTextColor"
                 app:layout_constraintStart_toStartOf="@+id/myText1"
                 app:layout_constraintTop_toTopOf="@+id/myText1" />
 
