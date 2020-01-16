@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference unreadBooks = db.collection("Unread Books");
     private RequestQueue requestQueue;
-
+    private BottomNavigationView bottomNavigationView;
 
     private final int REQUEST_CODE = 2;
 
@@ -70,14 +72,30 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        addBookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
-                startActivityForResult(intent, REQUEST_CODE);
+        addBookButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
+            startActivityForResult(intent, REQUEST_CODE);
+        });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+//        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.library:
+                    Toast.makeText(MainActivity.this, "My Library", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.stats:
+                    Toast.makeText(MainActivity.this, "Shelf Stats", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.about:
+                    Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
+                    break;
             }
+            return true;
         });
     }
+
 
     @Override
     protected void onStart() {
@@ -109,88 +127,89 @@ public class MainActivity extends AppCompatActivity {
 
             requestQueue = Volley.newRequestQueue(this);
 
+            Log.d("DEBUG", "requestCode is " + requestCode + ", REQUEST_CODE is " + REQUEST_CODE);
+
             if (requestCode == REQUEST_CODE) {
-                assert data != null;
-                String message = data.getStringExtra("scannedIsbn");
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
 
-            Log.d("DEBUG", "entered onActivityResult method in Main");
+                Log.d("DEBUG", "entered onActivityResult method in Main");
 
-            String enteredIsbn = data.getStringExtra("scannedIsbn");
-            Log.d("DEBUG", "entered ISBN is " + enteredIsbn);
+                String enteredIsbn = data.getStringExtra("scannedIsbn");
+                Log.d("DEBUG", "entered ISBN is " + enteredIsbn);
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-            "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                    "&key=" + BOOKS_TOKEN, null,
-            new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        Log.d("DEBUG", "received response");
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                        "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
+                                "&key=" + BOOKS_TOKEN, null,
 
-                        JSONArray bookArray = response.getJSONArray("items");
-                        Log.d("DEBUG", "bookArray is " + bookArray);
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    Log.d("DEBUG", "received response " + response);
 
-                        JSONObject bookJSON = bookArray.getJSONObject(0);
-                        Log.d("DEBUG", "bookJSON is " + bookJSON);
+                                    JSONArray bookArray = response.getJSONArray("items");
+                                    Log.d("DEBUG", "bookArray is " + bookArray);
 
-                        JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
-                        Log.d("DEBUG", "volumeInfo is " + volumeInfo);
+                                    JSONObject bookJSON = bookArray.getJSONObject(0);
+                                    Log.d("DEBUG", "bookJSON is " + bookJSON);
 
-                        String parsedTitle = volumeInfo.getString("title");
-                        Log.d("DEBUG", "parsedTitle is " + parsedTitle);
+                                    JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
+                                    Log.d("DEBUG", "volumeInfo is " + volumeInfo);
 
-                        JSONArray authorsArray = volumeInfo.getJSONArray("authors");
-                        String parsedAuthor = authorsArray.getString(0);
-                        Log.d("DEBUG", "parsedAuthor is " + parsedAuthor);
+                                    String parsedTitle = volumeInfo.getString("title");
+                                    Log.d("DEBUG", "parsedTitle is " + parsedTitle);
 
-                        String parsedDescription = volumeInfo.getString("description");
-                        Log.d("DEBUG", "parsedDescription is " + parsedDescription);
+                                    JSONArray authorsArray = volumeInfo.getJSONArray("authors");
+                                    String parsedAuthor = authorsArray.getString(0);
+                                    Log.d("DEBUG", "parsedAuthor is " + parsedAuthor);
 
-                        JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                        String parsedImageUrl = imageLinks.getString("thumbnail");
-                        Log.d("DEBUG", "parsedImage Url is " + parsedImageUrl);
+                                    String parsedDescription = volumeInfo.getString("description");
+                                    Log.d("DEBUG", "parsedDescription is " + parsedDescription);
 
-                        String parsedHttpsImageUrl =
-                                parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
-                        Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
+                                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                                    String parsedImageUrl = imageLinks.getString("thumbnail");
+                                    Log.d("DEBUG", "parsedImage Url is " + parsedImageUrl);
 
-                        Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
+                                    String parsedHttpsImageUrl =
+                                            parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
+                                    Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
 
-                        unreadBooks.add(newBook)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        Toast.makeText(MainActivity.this, "Success! Book added " +
-                                                        "from AddBook",
-                                                Toast.LENGTH_LONG).show();
-                                        Log.d("DEBUG", "Added book from AddBookClass!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("DEBUG", "onFailure: " + e.toString());
-                                    }
-                                });
+                                    Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
+
+                                    unreadBooks.add(newBook)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    Toast.makeText(MainActivity.this, "Success! Book added " +
+                                                                    "from AddBook",
+                                                            Toast.LENGTH_LONG).show();
+                                                    Log.d("DEBUG", "Added book from AddBookClass!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.d("DEBUG", "onFailure: " + e.toString());
+                                                }
+                                            });
 
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
-                }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("DEBUG", "onErrorResponse: " + error.getMessage());
-                }
-            });
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("DEBUG", "onErrorResponse: " + error.getMessage());
+                            }
+                        });
+
                 requestQueue.add(jsonObjectRequest);
 
-}
+            }
+        }
     }
 
 
