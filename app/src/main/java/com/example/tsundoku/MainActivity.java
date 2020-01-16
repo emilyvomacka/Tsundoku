@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
         super.onStart();
             bookList.clear();
             unreadBooks.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
