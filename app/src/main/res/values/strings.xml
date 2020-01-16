@@ -9,6 +9,7 @@
     <string name="about">About</string>
     <string name="settings">Settings</string>
     <string name="shelf_stats">Shelf Stats</string>
+    <string name="permission_denied_explanation">Locations permissions denied by user</string>
     <string-array name="programming_languages">
         <item>Great New Book</item>
         <item>Book I bought last year</item>

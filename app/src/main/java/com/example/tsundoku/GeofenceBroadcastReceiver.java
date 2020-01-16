@@ -1,6 +1,12 @@
 package com.example.tsundoku;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 
-abstract class GeofenceBroadcastReceiver extends BroadcastReceiver {
+public class GeofenceBroadcastReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+    }
 }
