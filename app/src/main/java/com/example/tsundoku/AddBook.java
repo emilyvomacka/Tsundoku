@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 
-import static com.example.tsundoku.Constants.BOOKS_TOKEN;
+import static com.example.tsundoku.Constants.BOOKS_MAPS_TOKEN;
 
 public class AddBook extends AppCompatActivity {
 
@@ -61,7 +61,7 @@ public class AddBook extends AppCompatActivity {
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                         "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                                "&key=" + BOOKS_TOKEN, null,
+                                "&key=" + BOOKS_MAPS_TOKEN, null,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {

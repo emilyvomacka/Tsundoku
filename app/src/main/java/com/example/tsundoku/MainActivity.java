@@ -43,7 +43,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.tsundoku.Constants.BOOKS_TOKEN;
+import static com.example.tsundoku.Constants.BOOKS_MAPS_TOKEN;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                         "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                                "&key=" + BOOKS_TOKEN, null,
+                                "&key=" + BOOKS_MAPS_TOKEN, null,
 
                         new Response.Listener<JSONObject>() {
                             @Override

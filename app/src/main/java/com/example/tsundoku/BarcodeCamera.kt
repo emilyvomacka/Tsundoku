@@ -65,6 +65,7 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
         // Create configuration object for the viewfinder use case
         val previewConfig = PreviewConfig.Builder().apply {
             setTargetResolution(Size(640, 480))
+            setTargetRotation(Surface.ROTATION_180)
         }.build()
 
 
