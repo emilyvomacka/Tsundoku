@@ -12,6 +12,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="6dp"
         android:checkable="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout

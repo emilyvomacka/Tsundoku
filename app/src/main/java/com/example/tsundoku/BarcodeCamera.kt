@@ -94,36 +94,36 @@ class BarcodeCamera : AppCompatActivity(), LifecycleOwner {
         // Build the image capture use case and attach button click listener
         val imageCapture = ImageCapture(imageCaptureConfig)
 
-        findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
-
-            Log.d("DEBUG", "entered onClick image capture method")
-
-            val file = File(externalMediaDirs.first(),
-                    "${System.currentTimeMillis()}.jpg")
-
-            imageCapture.takePicture(file, executor,
-                    object : ImageCapture.OnImageSavedListener {
-                        override fun onError(
-                                imageCaptureError: ImageCapture.ImageCaptureError,
-                                message: String,
-                                exc: Throwable?
-                        ) {
-                            val msg = "Photo capture failed: $message"
-                            Log.d("DEBUG", msg)
-                            viewFinder.post {
-                                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                        override fun onImageSaved(file: File) {
-                            val msg = "Photo capture succeeded: ${file.absolutePath}"
-                            Log.d("DEBUG", msg)
-                            viewFinder.post {
-                                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    })
-        }
+//        findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
+//
+//            Log.d("DEBUG", "entered onClick image capture method")
+//
+//            val file = File(externalMediaDirs.first(),
+//                    "${System.currentTimeMillis()}.jpg")
+//
+//            imageCapture.takePicture(file, executor,
+//                    object : ImageCapture.OnImageSavedListener {
+//                        override fun onError(
+//                                imageCaptureError: ImageCapture.ImageCaptureError,
+//                                message: String,
+//                                exc: Throwable?
+//                        ) {
+//                            val msg = "Photo capture failed: $message"
+//                            Log.d("DEBUG", msg)
+//                            viewFinder.post {
+//                                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//
+//                        override fun onImageSaved(file: File) {
+//                            val msg = "Photo capture succeeded: ${file.absolutePath}"
+//                            Log.d("DEBUG", msg)
+//                            viewFinder.post {
+//                                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    })
+//        }
 
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
             // In our analysis, we care more about the latest image than
