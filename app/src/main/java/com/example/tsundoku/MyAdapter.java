@@ -41,7 +41,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         String imageUrl;
 
         holder.title.setText(book.getTitle());
-        holder.description.setText(book.getDescription());
 
         imageUrl = book.getImageUrl();
 
@@ -64,14 +63,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, description;
+        TextView title;
         ImageView coverImage;
 
         public MyViewHolder(@NonNull View itemView, Context ct) {
             super(itemView);
             context = ct;
             title = itemView.findViewById(R.id.myText1);
-            description = itemView.findViewById(R.id.myText2);
             coverImage = itemView.findViewById(R.id.myImageView);
         }
     }
