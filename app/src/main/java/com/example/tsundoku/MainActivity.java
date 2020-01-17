@@ -34,7 +34,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.example.tsundoku.Constants.BOOKS_TOKEN;
@@ -172,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
                                     parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
                             Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
 
-                            Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
+                            Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
+                                    parsedHttpsImageUrl, new Date());
 
                             unreadBooks.add(newBook)
                                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

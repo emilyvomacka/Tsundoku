@@ -27,6 +27,8 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 
+import java.util.Date;
+
 import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 
 public class AddBook extends AppCompatActivity {
@@ -95,7 +97,8 @@ public class AddBook extends AppCompatActivity {
                                             parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
                                     Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
 
-                                    Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription, parsedHttpsImageUrl);
+                                    Book newBook = new Book(parsedTitle, parsedAuthor,
+                                            parsedDescription, parsedHttpsImageUrl, new Date());
 
                                     collectionReference.add(newBook)
                                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
