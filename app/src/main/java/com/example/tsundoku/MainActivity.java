@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -23,11 +25,15 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -47,6 +53,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlin.jvm.internal.Intrinsics;
+
 import static com.example.tsundoku.Constants.BOOKS_MAPS_TOKEN;
 
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
+
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -68,17 +77,25 @@ public class MainActivity extends AppCompatActivity {
     private boolean runningQOrLater =
             android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q;
     private @Nullable ScriptGroup.Binding binding;
+    private @Nullable GeofenceViewModel viewModel;
     private int REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33;
     private int REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34;
     private int REQUEST_TURN_DEVICE_LOCATION_ON = 29;
     private int LOCATION_PERMISSION_INDEX = 0;
     private int BACKGROUND_LOCATION_PERMISSION_INDEX = 1;
+    private PendingIntent geofencePendingIntent;
+    private String ACTION_GEOFENCE_EVENT = "MainActivity.action.ACTION_GEOFENCE_EVENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent geoIntent = new Intent(this, GeofenceBroadcastReceiver.class);
+        geoIntent.setAction(ACTION_GEOFENCE_EVENT);
+        PendingIntent.getBroadcast(this, 0, geoIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        GeofencingClient geofencingClient = LocationServices.getGeofencingClient(this);
 
         addBookButton = findViewById(R.id.fab);
         bookList = new ArrayList<>();
@@ -312,9 +329,61 @@ public class MainActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                
+//                addBookGeofences();
             }
         });
+    }
+
+    private final void addBookGeofences() {
+        if (viewModel == null) {
+            Intrinsics.throwUninitializedPropertyAccessException("viewModel");
+        }
+
+        if (!viewModel.geofenceIsActive()) {
+            viewModel = this.viewModel;
+            if (viewModel == null) {
+                Intrinsics.throwUninitializedPropertyAccessException("viewModel");
+            }
+
+            int currentGeofenceIndex = viewModel.nextGeofenceIndex();
+            if (currentGeofenceIndex >= GeofencingConstants.INSTANCE.getNUM_LANDMARKS()) {
+                this.removeGeofences();
+                viewModel = this.viewModel;
+                if (viewModel == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("viewModel");
+                }
+
+                viewModel.geofenceActivated();
+            } else {
+                LandmarkDataObject currentGeofenceData = GeofencingConstants.INSTANCE.getLANDMARK_DATA()[currentGeofenceIndex];
+
+                Geofence geofence = (new com.google.android.gms.location.Geofence.Builder())
+                                .setRequestId(currentGeofenceData.getId())
+                                .setCircularRegion(currentGeofenceData.getLatLong().latitude, currentGeofenceData.getLatLong().longitude, 100.0F)
+                                .setExpirationDuration(GeofencingConstants.INSTANCE.getGEOFENCE_EXPIRATION_IN_MILLISECONDS())
+                                .setTransitionTypes(1)
+                                .build();
+
+                GeofencingRequest geofencingRequest = (new com.google.android.gms.location.GeofencingRequest.Builder())
+                        .setInitialTrigger(1)
+                        .addGeofence(geofence).build();
+
+                GeofencingClient var10 = this.geofencingClient;
+                if (var10 == null) {
+                    Intrinsics.throwUninitializedPropertyAccessException("geofencingClient");
+                }
+
+                Task var11 = var10.removeGeofences(this.getGeofencePendingIntent());
+                if (var11 != null) {
+                    Task var5 = var11;
+                    boolean var6 = false;
+                    boolean var7 = false;
+                    int var9 = false;
+                    var5.addOnCompleteListener((OnCompleteListener)(new HuntMainActivity$addGeofenceForClue$$inlined$run$lambda$1(this, geofencingRequest, geofence)));
+                }
+
+            }
+        }
     }
 
 }
