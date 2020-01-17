@@ -14,6 +14,9 @@
     <string name="login_button_next">Next</string>
     <string name="login_button_cancel">Cancel</string>
     <string name="login_error_password">Password must be at least 3 characters</string>
+    <string name="book_title">Book Title</string>
+    <string name="sample_date_added">Date Added</string>
+    <string name="sample_book_title">Book Title</string>
     <string-array name="programming_languages">
         <item>Great New Book</item>
         <item>Book I bought last year</item>

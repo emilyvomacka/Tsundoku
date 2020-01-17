@@ -64,13 +64,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
+        TextView dateAdded;
         ImageView coverImage;
 
         public MyViewHolder(@NonNull View itemView, Context ct) {
             super(itemView);
             context = ct;
-            title = itemView.findViewById(R.id.myText1);
-            coverImage = itemView.findViewById(R.id.myImageView);
+            coverImage = itemView.findViewById(R.id.mdcImageView);
+            title = itemView.findViewById(R.id.mdcTitle);
+            dateAdded = itemView.findViewById(R.id.mdcDateAdded);
         }
     }
 }

@@ -42,7 +42,7 @@ import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 public class MainActivity extends AppCompatActivity implements NavigationHost {
 
     private FloatingActionButton addBookButton;
-    private List<Book> bookList;
+    public List<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
 

@@ -37,6 +37,7 @@ public class LoginFragment extends Fragment {
                     passwordTextInput.setError(getString(R.string.login_error_password));
                 } else {
                     passwordTextInput.setError(null); // Clear the error
+                    ((NavigationHost) getActivity()).navigateTo(new BookShelfFragment(), false);
                 }
             }
         });
@@ -47,7 +48,7 @@ public class LoginFragment extends Fragment {
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (isPasswordValid(passwordEditText.getText())) {
                     passwordTextInput.setError(null); //Clear the error
-                    ((NavigationHost) getActivity()).navigateTo(new ProductGridFragment(), false);
+
                 }
                 return false;
             }
