@@ -12,39 +12,31 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -52,7 +44,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,9 +219,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.d("DEBUG", "onRequestPermissionResult")
+        Log.d("DEBUG", "onRequestPermissionResult");
 
-        if (grantResults.isEmpty() || grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED || (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED))
+        if (grantResults.length == 0 || grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED || (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED))
         {
             Toast.makeText(this, "Location permissions denied", Toast.LENGTH_LONG).show();
         } else {
@@ -244,80 +235,89 @@ public class MainActivity extends AppCompatActivity {
                     PackageManager.PERMISSION_GRANTED ==
                             ActivityCompat.checkSelfPermission(this,
                                     Manifest.permission.ACCESS_FINE_LOCATION));
-            boolean backgroundPermissionApproved = if (runningQOrLater) {
-                ActivityCompat.checkSelfPermission(
-                        this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            boolean backgroundPermissionApproved;
+            if (runningQOrLater) {
+                backgroundPermissionApproved = (
+                        PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
+                        this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 );
             } else {
-                "true"
+                backgroundPermissionApproved = true;
             }
             return foregroundLocationApproved && backgroundPermissionApproved;
         }
 
-        @TargetApi(29)
-        private boolean requestForegroundAndBackgroundLocationPermissions() {
-            if (foregroundAndBackgroundLocationPermissionApproved()) {
-                return;
-            } else {
-                // Else request the permission
-                // this provides the result[LOCATION_PERMISSION_INDEX]
-                ArrayList<Boolean> permissionsArray = new ArrayList<Boolean>();
-                permissionsArray = [Manifest.permission.ACCESS_FINE_LOCATION];
-            }
-
-            int resultCode = when {
-                runningQOrLater -> {
-                    // this provides the result[BACKGROUND_LOCATION_PERMISSION_INDEX]
-                    permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
-                }
-                else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-            }
-
-            Log.d("DEBUG", "Request foreground only location permission");
-            ActivityCompat.requestPermissions(MainActivity.this, permissionsArray, resultCode);
+    @TargetApi(29)
+    private void requestForegroundAndBackgroundLocationPermissions() {
+        ArrayList<String> permissionsArray = new ArrayList<String>();
+        if (foregroundAndBackgroundLocationPermissionApproved()) {
+            return;
+        } else {
+            // Else request the permission
+            // this provides the result[LOCATION_PERMISSION_INDEX]
+            permissionsArray.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-    private void checkDeviceLocationSettingsAndStartGeofence(resolve:Boolean = true) {
-        val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
-        }
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        int resultCode;
 
-        val settingsClient = LocationServices.getSettingsClient(this)
-        val locationSettingsResponseTask =
-                settingsClient.checkLocationSettings(builder.build())
+        if (runningQOrLater) {
+            // this provides the result[BACKGROUND_LOCATION_PERMISSION_INDEX]
+            permissionsArray.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            resultCode = REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE;
+        }
+        else {
+            resultCode = REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE;
+        }
 
-        locationSettingsResponseTask.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException && resolve){
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    exception.startResolutionForResult(MainActivity.this,
-                    REQUEST_TURN_DEVICE_LOCATION_ON)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    Log.d("DEBUG", "Error geting location settings resolution: " + sendEx.message)
-                }
-            } else {
-                Snackbar.make(
-                        binding.activityMapsMain,
-                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
-                ).setAction(android.R.string.ok) {
-                    checkDeviceLocationSettingsAndStartGeofence()
-                }.show()
-            }
-        }
-        locationSettingsResponseTask.addOnSuccessListener {
-            if ( it.isSuccessful ) {
-                addGeofenceForClue()
-            }
-        }
+        Log.d("DEBUG", "Request foreground only location permission");
+
+        ActivityCompat.requestPermissions(MainActivity.this,
+                permissionsArray.toArray(new String[permissionsArray.size()]),
+                resultCode);
     }
 
+    private void checkDeviceLocationSettingsAndStartGeofence() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
+        LocationSettingsRequest.Builder builder =
+                new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> locationSettingsResponseTask = settingsClient.checkLocationSettings(builder.build());
+
+        locationSettingsResponseTask.addOnFailureListener(new OnFailureListener() {
+            public void onFailure(@NonNull Exception exception) {
+                if (exception instanceof ResolvableApiException){
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ((ResolvableApiException) exception).startResolutionForResult(MainActivity.this,
+                        REQUEST_TURN_DEVICE_LOCATION_ON);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        Log.d("DEBUG", "Error getting location settings resolution: " + sendEx.getMessage());
+                    }
+                } else {
+    //                Snackbar.make(
+    //                        binding.activityMapsMain,
+    //                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+    //                ).setAction(android.R.string.ok) {
+    //                    checkDeviceLocationSettingsAndStartGeofence()
+    //                }.show();
+    //                }
+                }
+            }
+        }).addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                
+            }
+        });
     }
+
+}
 
 
 
