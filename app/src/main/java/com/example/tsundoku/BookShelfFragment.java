@@ -1,10 +1,12 @@
 package com.example.tsundoku;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -48,8 +50,7 @@ public class BookShelfFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.book_shelf_fragment, container, false);
@@ -82,5 +83,37 @@ public class BookShelfFragment extends Fragment {
                 }
         });
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+//        addBookButton = findViewById(R.id.fab);
+//        bookList = new ArrayList<>();
+//        recyclerView = findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//
+//        addBookButton.setOnClickListener(v -> {
+//            Intent intent = new Intent(getContext(), BarcodeCamera.class);
+//            startActivityForResult(intent, REQUEST_CODE);
+//        });
+//
+//        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+////        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
+//
+//        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+//            switch (item.getItemId()) {
+//                case R.id.library:
+//                    Toast.makeText(getContext(), "My Library", Toast.LENGTH_SHORT).show();
+//                    break;
+//                case R.id.stats:
+//                    Toast.makeText(getContext(), "Shelf Stats", Toast.LENGTH_SHORT).show();
+//                    break;
+//                case R.id.about:
+//                    Toast.makeText(getContext(), "About", Toast.LENGTH_SHORT).show();
+//                    break;
+//            }
+//            return true;
+//        });
     }
 }

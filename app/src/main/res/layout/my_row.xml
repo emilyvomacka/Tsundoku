@@ -21,7 +21,7 @@
 
             <ImageView
                 android:id="@+id/mdcImageView"
-                android:layout_width="60dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/book"/>
 
@@ -33,7 +33,9 @@
                 <TextView
                     android:id="@+id/mdcTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="34dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:paddingLeft="12dp"
                     android:text="@string/sample_book_title"
                     android:fontFamily="@font/playfair_display_reg"
