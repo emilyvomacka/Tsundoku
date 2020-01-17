@@ -14,7 +14,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="6dp"
         app:cardElevation="6dp"
-        android:checkable="true">
+        android:checkable="true"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -41,7 +42,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/primaryTextColor"
-                android:fontFamily="@font/playfair_display_bold"
+                android:fontFamily="@font/playfair_display_reg"
                 app:layout_constraintStart_toEndOf="@+id/myImageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
