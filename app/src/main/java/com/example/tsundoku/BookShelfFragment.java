@@ -59,9 +59,6 @@ public class BookShelfFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//      int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
-//      int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
-//      recyclerView.addItemDecoration(new ProductGridItemDecoration(largePadding, smallPadding));
 
         //get books
         bookList = new ArrayList<>();
@@ -89,9 +86,6 @@ public class BookShelfFragment extends Fragment {
     public void onStart() {
         super.onStart();
 //        addBookButton = findViewById(R.id.fab);
-//        bookList = new ArrayList<>();
-//        recyclerView = findViewById(R.id.recyclerView);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //
 //        addBookButton.setOnClickListener(v -> {
 //            Intent intent = new Intent(getContext(), BarcodeCamera.class);
