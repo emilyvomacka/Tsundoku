@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            startActivity(new Intent(this, LoginActivity.class));
-        }
+//        if (savedInstanceState == null) {
+//            startActivity(new Intent(this, LoginActivity.class));
+//        }
 
         addBookButton = findViewById(R.id.fab);
         bookList = new ArrayList<>();

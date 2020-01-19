@@ -125,7 +125,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                         String name = task.getResult()
                                                             .getString("username");
 
-                                                        Intent intent = new Intent(CreateAccountActivity.this, MyLibrary.class);
+                                                        Intent intent =
+                                                                new Intent(CreateAccountActivity.this, MainActivity.class);
                                                         intent.putExtra("username", name);
                                                         intent.putExtra("userId", currentUserId);
                                                         startActivity(intent);
