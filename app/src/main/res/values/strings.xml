@@ -11,27 +11,11 @@
     <string name="shelf_stats">Shelf Stats</string>
     <string name="hint_username">Enter username</string>
     <string name="shr_hint_password">Enter password</string>
-    <string name="login_button_next">Next</string>
+    <string name="login_button_next">Login</string>
     <string name="login_button_cancel">Cancel</string>
     <string name="login_error_password">Password must be at least 3 characters</string>
     <string name="book_title">Book Title</string>
     <string name="sample_date_added">Date Added</string>
     <string name="sample_book_title">Book Title</string>
-    <string-array name="programming_languages">
-        <item>Great New Book</item>
-        <item>Book I bought last year</item>
-        <item>Other book</item>
-        <item>Another Book</item>
-        <item>Thought I\'d Read This</item>
-        <item>What is this book</item>
-    </string-array>
-
-    <string-array name="desc">
-        <item>"Description"</item>
-        <item>"Description"</item>
-        <item>"Description"</item>
-        <item>"Description"</item>
-        <item>"Description"</item>
-        <item>"Description"</item>
-    </string-array>
+    <string name="create_account_button">Create Account</string>
 </resources>

@@ -41,19 +41,20 @@ import java.util.List;
 
 import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 
-public class MainActivity extends AppCompatActivity implements NavigationHost {
-
-    private FloatingActionButton addBookButton;
-    public List<Book> bookList;
-    private RecyclerView recyclerView;
-    private MyAdapter myAdapter;
+public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference unreadBooks = db.collection("Unread Books");
     private RequestQueue requestQueue;
+
     private BottomNavigationView bottomNavigationView;
+    private FloatingActionButton addBookButton;
+    public List<Book> bookList;
+    private RecyclerView recyclerView;
+    private MyAdapter myAdapter;
+
 
     private final int REQUEST_CODE = 2;
 
@@ -62,25 +63,23 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.container, new LoginFragment())
-                    .commit();
+            startActivity(new Intent(this, LoginActivity.class));
         }
 
-//        addBookButton = findViewById(R.id.fab);
-//        bookList = new ArrayList<>();
-//        recyclerView = findViewById(R.id.recyclerView);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//
-//        addBookButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
-//            startActivityForResult(intent, REQUEST_CODE);
-//        });
+        addBookButton = findViewById(R.id.fab);
+        bookList = new ArrayList<>();
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        addBookButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
+            startActivityForResult(intent, REQUEST_CODE);
+        });
 //
 //        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-////        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
+//        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
 //
 //        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
 //            switch (item.getItemId()) {
@@ -98,29 +97,27 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
 //        });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bookList.clear();
+        unreadBooks.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot dbBooks) {
+                if (!dbBooks.isEmpty()) {
+                    for (QueryDocumentSnapshot doc : dbBooks) {
+                            Book book = doc.toObject(Book.class);
+                            bookList.add(book);
+                            Log.d("DEBUG", book.getTitle());
+                    }
 
-//    @Override
-//    protected void onStart() {
-//
-//        super.onStart();
-//            bookList.clear();
-//            unreadBooks.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                @Override
-//                public void onSuccess(QuerySnapshot dbBooks) {
-//                    if (!dbBooks.isEmpty()) {
-//                        for (QueryDocumentSnapshot doc : dbBooks) {
-//                                Book book = doc.toObject(Book.class);
-//                                bookList.add(book);
-//                                Log.d("DEBUG", book.getTitle());
-//                        }
-//
-//                        myAdapter = new MyAdapter(MainActivity.this, bookList);
-//                        recyclerView.setAdapter(myAdapter);
-////                        myAdapter.notifyDataSetChanged();
-//                    }
-//                }
-//        });
-//    }
+                    myAdapter = new MyAdapter(MainActivity.this, bookList);
+                    recyclerView.setAdapter(myAdapter);
+                    myAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -131,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         Log.d("DEBUG", "requestCode is " + requestCode + ", REQUEST_CODE is " + REQUEST_CODE);
 
         if (requestCode == REQUEST_CODE) {
-
-            Log.d("DEBUG", "entered onActivityResult method in Main");
-
             String enteredIsbn = data.getStringExtra("scannedIsbn");
             Log.d("DEBUG", "entered ISBN is " + enteredIsbn);
 
@@ -208,22 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
                 });
 
             requestQueue.add(jsonObjectRequest);
-
         }
-    }
-
-
-    public void navigateTo(Fragment fragment, boolean addToBackstack) {
-        FragmentTransaction transaction =
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, fragment);
-
-        if (addToBackstack) {
-            transaction.addToBackStack(null);
-        }
-
-        transaction.commit();
     }
 
 //    public void showDetails(View view) {

@@ -1,35 +1,36 @@
 package com.example.tsundoku;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.NonNull;
+import android.widget.Button;
+
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-/**
- * Fragment representing the login screen for Shrine.
- */
-public class LoginFragment extends Fragment {
+public class LoginActivity extends AppCompatActivity {
+    private Button loginButton;
+    private Button createAccount;
+
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.login_fragment, container, false);
+        setContentView(R.layout.login_screen);
+        super.onCreate(savedInstanceState);
 
-        final TextInputLayout passwordTextInput = view.findViewById(R.id.password_text_input);
-        final TextInputEditText passwordEditText = view.findViewById(R.id.password_edit_text);
-        MaterialButton nextButton = view.findViewById(R.id.next_button);
+        final TextInputLayout passwordTextInput = findViewById(R.id.password_text_input);
+        final TextInputEditText passwordEditText = findViewById(R.id.password_edit_text);
+        MaterialButton nextButton = findViewById(R.id.next_button);
 
-        // Set an error if the password is less than 8 characters.
+        // Set an error if the password is less than 3 characters.
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,7 +38,9 @@ public class LoginFragment extends Fragment {
                     passwordTextInput.setError(getString(R.string.login_error_password));
                 } else {
                     passwordTextInput.setError(null); // Clear the error
-                    ((NavigationHost) getActivity()).navigateTo(new BookShelfFragment(), false);
+                    Log.d("DEBUG", "leaving fragment");
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -48,19 +51,15 @@ public class LoginFragment extends Fragment {
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if (isPasswordValid(passwordEditText.getText())) {
                     passwordTextInput.setError(null); //Clear the error
-
                 }
                 return false;
             }
         });
 
-        return view;
     }
 
     private boolean isPasswordValid(@Nullable Editable text) {
         return text != null && text.length() >= 3;
     }
-
-    // "isPasswordValid" from "Navigate to the next Fragment" section method goes here
 }
 
