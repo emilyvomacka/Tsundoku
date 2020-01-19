@@ -68,17 +68,17 @@
             android:text="@string/login_button_cancel" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/create_account_button"
+            android:id="@+id/create_account_button_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="0dp"
-            android:layout_toStartOf="@+id/next_button"
+            android:layout_toStartOf="@+id/login_button"
             android:text="@string/create_account_button"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/next_button"
+            android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

@@ -14,11 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
-    private Button loginButton;
-    private Button createAccount;
+    private MaterialButton loginButton;
+    private MaterialButton createAcctButton;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseUser currentUser;
 
+    //Firestore connection
+    private FirebaseFirestore
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,10 +36,18 @@ public class LoginActivity extends AppCompatActivity {
 
         final TextInputLayout passwordTextInput = findViewById(R.id.password_text_input);
         final TextInputEditText passwordEditText = findViewById(R.id.password_edit_text);
-        MaterialButton nextButton = findViewById(R.id.next_button);
+        loginButton = findViewById(R.id.login_button);
+        createAcctButton = findViewById(R.id.create_account_button_login);
+
+        createAcctButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, CreateAccountActivity.class));
+            }
+        });
 
         // Set an error if the password is less than 3 characters.
-        nextButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!isPasswordValid(passwordEditText.getText())) {
