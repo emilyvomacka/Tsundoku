@@ -29,6 +29,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -206,10 +207,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
     @Override
     public void onBookClick(int position) {
-//        Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
-//        intent.putExtra("book", bookList.get(position));
-//        startActivity(intent);
-        Toast.makeText(MainActivity.this, "You clicked a book", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
+        Gson gson = new Gson();
+        String detailsBook = gson.toJson(bookList.get(position));
+        intent.putExtra("book", detailsBook);
+        startActivity(intent);
     }
 }
 
