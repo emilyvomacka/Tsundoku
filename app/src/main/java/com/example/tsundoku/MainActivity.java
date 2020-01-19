@@ -109,7 +109,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             Log.d("DEBUG", book.getTitle());
                     }
 
-                    myAdapter = new MyAdapter(MainActivity.this, bookList, this.onBookClick());
+                    myAdapter = new MyAdapter(MainActivity.this, bookList,
+                            MainActivity.this);
                     recyclerView.setAdapter(myAdapter);
                     myAdapter.notifyDataSetChanged();
                 }
@@ -205,8 +206,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
     @Override
     public void onBookClick(int position) {
-//        bookList.get(position);
 //        Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
+//        intent.putExtra("book", bookList.get(position));
 //        startActivity(intent);
         Toast.makeText(MainActivity.this, "You clicked a book", Toast.LENGTH_SHORT).show();
     }
