@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.launcher">
-        <activity android:name=".CreateAccountActivity"></activity>
+        <activity android:name=".MyLibrary"></activity>
+        <activity android:name=".CreateAccountActivity" />
         <activity
             android:name=".BarcodeCamera"
             android:parentActivityName=".MainActivity" />

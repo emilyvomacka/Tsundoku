@@ -21,12 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class LoginActivity extends AppCompatActivity {
     private MaterialButton loginButton;
     private MaterialButton createAcctButton;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseUser currentUser;
 
-    //Firestore connection
-    private FirebaseFirestore
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

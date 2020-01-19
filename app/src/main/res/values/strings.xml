@@ -18,4 +18,5 @@
     <string name="sample_date_added">Date Added</string>
     <string name="sample_book_title">Book Title</string>
     <string name="create_account_button">Create Account</string>
+    <string name="hint_email">Enter email</string>
 </resources>
