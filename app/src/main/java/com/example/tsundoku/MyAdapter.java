@@ -49,7 +49,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         holder.title.setText(book.getTitle());
 
-
+//        String timeAgo = (String) DateUtils.getRelativeTimeSpanString(book.getDateAdded().getSeconds() * 1000);
         holder.dateAdded.setText("today");
 
         imageUrl = book.getImageUrl();

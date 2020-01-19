@@ -21,7 +21,6 @@
         <activity
             android:name=".BarcodeCamera"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".AddBook" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

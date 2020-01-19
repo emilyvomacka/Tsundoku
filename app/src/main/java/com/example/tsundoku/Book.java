@@ -7,13 +7,13 @@ public class Book {
     private String author;
     private String description;
     private String imageUrl;
-    private Date dateAdded;
+    private String dateAdded;
 
     //We must have an empty constructor for Firestore
     public Book() { }
 
     public Book(String title, String author, String description, String imageUrl,
-                Date dateAdded) {
+                String dateAdded) {
         this.title = title;
         this.author = author;
         this.description = description;
@@ -53,11 +53,11 @@ public class Book {
         this.imageUrl = imageUrl;
     }
 
-    public Date getDateAdded() {
+    public String getDateAdded() {
         return dateAdded;
     }
 
-    public void setDateAdded(Date dateAdded) {
+    public void setDateAdded(String dateAdded) {
         this.dateAdded = dateAdded;
     }
 }

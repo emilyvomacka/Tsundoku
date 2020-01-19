@@ -3,15 +3,18 @@ package com.example.tsundoku;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 public class BookDetailsActivity extends AppCompatActivity {
 
-    private TextView title, author, desc;
+    private TextView title, author, desc, dateAdded;
     private ImageView coverImage;
 
     @Override
@@ -41,6 +44,13 @@ public class BookDetailsActivity extends AppCompatActivity {
                 .placeholder(R.drawable.book)
                 .fit()
                 .into(this.coverImage);
+
+//        String timeAgo = (String) DateUtils.getRelativeTimeSpanString
+//                        (detailsBook.getDateAdded().getSeconds() * 1000);
+
+
+        dateAdded = findViewById(R.id.details_book_date_added);
+        dateAdded.setText("today");
     }
 
 }

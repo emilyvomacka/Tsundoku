@@ -169,14 +169,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
 
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
-                                    parsedHttpsImageUrl, new Date());
+                                    parsedHttpsImageUrl, "today");
 
                             unreadBooks.add(newBook)
                                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                         @Override
                                         public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(MainActivity.this, "Success! Book added " +
-                                                            "from AddBook",
+                                            Toast.makeText(MainActivity.this, parsedTitle +
+                                                    "Success! " + parsedTitle + " added to library",
                                                     Toast.LENGTH_LONG).show();
                                             Log.d("DEBUG", "Added book from AddBookClass!");
 
