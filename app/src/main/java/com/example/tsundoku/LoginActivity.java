@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
                     passwordTextInput.setError(getString(R.string.login_error_password));
                 } else {
                     passwordTextInput.setError(null); // Clear the error
-                    Log.d("DEBUG", "leaving fragment");
                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
                     startActivity(intent);
                 }
@@ -70,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isPasswordValid(@Nullable Editable text) {
-        return text != null && text.length() >= 3;
+        return text != null && text.length() >= 6;
     }
 }
 

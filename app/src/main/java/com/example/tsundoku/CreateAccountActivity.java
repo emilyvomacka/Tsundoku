@@ -1,10 +1,12 @@
 package com.example.tsundoku;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,6 +54,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         createAcctButton = findViewById(R.id.create_account_button);
         emailEditText = findViewById(R.id.email_account);
+        final TextInputLayout passwordTextInput = findViewById(R.id.password_text_input);
         passwordEditText = findViewById(R.id.password_account);
         usernameEditText = findViewById(R.id.username_account);
 
@@ -72,18 +76,21 @@ public class CreateAccountActivity extends AppCompatActivity {
         createAcctButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(emailEditText.getText().toString())
-                        && !TextUtils.isEmpty(passwordEditText.getText().toString())
-                        && !TextUtils.isEmpty(usernameEditText.getText().toString())) {
-                    String email = emailEditText.getText().toString().trim();
-                    String password = passwordEditText.getText().toString().trim();
-                    String username = usernameEditText.getText().toString().trim();
-                    Log.d("DEBUG", "in Create Account onClick, " + email + password + username);
-                    createUserEmailAccount(email, password, username);
-
+                if (!isPasswordValid(passwordEditText.getText())) {
+                    passwordTextInput.setError(getString(R.string.login_error_password));
                 } else {
-                    Toast.makeText(CreateAccountActivity.this, "Empty fields not allowed",
-                            Toast.LENGTH_SHORT);
+                    if (!TextUtils.isEmpty(emailEditText.getText().toString())
+                            && !TextUtils.isEmpty(passwordEditText.getText().toString())
+                            && !TextUtils.isEmpty(usernameEditText.getText().toString())) {
+                        String email = emailEditText.getText().toString().trim();
+                        String password = passwordEditText.getText().toString().trim();
+                        String username = usernameEditText.getText().toString().trim();
+                        Log.d("DEBUG", "in Create Account onClick, " + email + password + username);
+                        createUserEmailAccount(email, password, username);
+                    } else {
+                        Toast.makeText(CreateAccountActivity.this, "Empty fields not allowed",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -164,5 +171,9 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         currentUser = firebaseAuth.getCurrentUser();
         firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    private boolean isPasswordValid(@Nullable Editable text) {
+        return text != null && text.length() >= 6;
     }
 }

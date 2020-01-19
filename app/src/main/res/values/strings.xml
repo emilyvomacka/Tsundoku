@@ -13,7 +13,7 @@
     <string name="shr_hint_password">Enter password</string>
     <string name="login_button_next">Login</string>
     <string name="login_button_cancel">Cancel</string>
-    <string name="login_error_password">Password must be at least 3 characters</string>
+    <string name="login_error_password">Password must be at least 6 characters</string>
     <string name="book_title">Book Title</string>
     <string name="sample_date_added">Date Added</string>
     <string name="sample_book_title">Book Title</string>
