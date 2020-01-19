@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import android.text.format.DateUtils;
@@ -22,11 +23,13 @@ import android.text.format.DateUtils;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     Context context;
-    private List<Book> bookList;
+    private ArrayList<Book> bookList;
+    private OnBookListener mOnBookListener;
 
-    public MyAdapter(Context ct, List<Book> bookList) {
+    public MyAdapter(Context ct, ArrayList<Book> bookList, OnBookListener onBookListener) {
         this.context = ct;
         this.bookList = bookList;
+        this.mOnBookListener = onBookListener;
     }
 
     @NonNull
@@ -35,7 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.my_row, parent, false);
 
-        return new MyViewHolder(view, context);
+        return new MyViewHolder(view, context, mOnBookListener);
     }
 
     @Override
@@ -68,18 +71,29 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return bookList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView title;
-        TextView dateAdded;
+        TextView title, dateAdded;
         ImageView coverImage;
+        OnBookListener onBookListener;
 
-        public MyViewHolder(@NonNull View itemView, Context ct) {
+        public MyViewHolder(@NonNull View itemView, Context ct, OnBookListener onBookListener) {
             super(itemView);
             context = ct;
             coverImage = itemView.findViewById(R.id.mdcImageView);
             title = itemView.findViewById(R.id.mdcTitle);
             dateAdded = itemView.findViewById(R.id.mdcDateAdded);
+            this.onBookListener = onBookListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onBookListener.onBookClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnBookListener{
+        void onBookClick(int position);
     }
 }

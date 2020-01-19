@@ -41,20 +41,18 @@ import java.util.List;
 
 import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookListener {
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference unreadBooks = db.collection("Unread Books");
     private RequestQueue requestQueue;
 
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton addBookButton;
-    public List<Book> bookList;
+    private ArrayList<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
-
 
     private final int REQUEST_CODE = 2;
 
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("DEBUG", book.getTitle());
                     }
 
-                    myAdapter = new MyAdapter(MainActivity.this, bookList);
+                    myAdapter = new MyAdapter(MainActivity.this, bookList, this.onBookClick());
                     recyclerView.setAdapter(myAdapter);
                     myAdapter.notifyDataSetChanged();
                 }
@@ -205,13 +203,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public void showDetails(View view) {
-//        Intent intent = new Intent(this, DisplayMessageActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.editText);
-//        String message = editText.getText().toString();
-//        intent.putExtra();
+    @Override
+    public void onBookClick(int position) {
+//        bookList.get(position);
+//        Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
 //        startActivity(intent);
-//    }
+        Toast.makeText(MainActivity.this, "You clicked a book", Toast.LENGTH_SHORT).show();
+    }
 }
 
 
