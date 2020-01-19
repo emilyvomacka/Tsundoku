@@ -130,14 +130,12 @@ public class LoginActivity extends AppCompatActivity {
                             });
                     }
                 })
-
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
 
                     }
                 });
-
         } else {
             Toast.makeText(LoginActivity.this, "Please enter an email and password to continue",
                     Toast.LENGTH_SHORT).show();
