@@ -23,7 +23,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,14 +42,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import util.BookApi;
+
 import static com.example.tsundoku.Constants.BOOKS_TOKEN;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookListener {
 
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference unreadBooks = db.collection("Unread Books");
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseUser user;
+
+    private CollectionReference collectionReference = db.collection("Unread Books");
     private RequestQueue requestQueue;
+    private String currentUserId;
+    private String currentUserName;
 
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton addBookButton;
@@ -76,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
             startActivityForResult(intent, REQUEST_CODE);
         });
+
+
 //
 //        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 //        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
@@ -99,8 +111,31 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     @Override
     protected void onStart() {
         super.onStart();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        if (BookApi.getInstance() != null) {
+            currentUserId = BookApi.getInstance().getUserId();
+            currentUserName = BookApi.getInstance().getUsername();
+        }
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+
+                } else {
+
+                }
+            }
+        };
+
+        user = firebaseAuth.getCurrentUser();
+        firebaseAuth.addAuthStateListener(authStateListener);
+
         bookList.clear();
-        unreadBooks.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot dbBooks) {
                 if (!dbBooks.isEmpty()) {
@@ -139,55 +174,42 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Log.d("DEBUG", "received response " + response);
 
+                            //parsing book
                             JSONArray bookArray = response.getJSONArray("items");
-                            Log.d("DEBUG", "bookArray is " + bookArray);
-
                             JSONObject bookJSON = bookArray.getJSONObject(0);
-                            Log.d("DEBUG", "bookJSON is " + bookJSON);
-
                             JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
-                            Log.d("DEBUG", "volumeInfo is " + volumeInfo);
-
                             String parsedTitle = volumeInfo.getString("title");
-                            Log.d("DEBUG", "parsedTitle is " + parsedTitle);
-
                             JSONArray authorsArray = volumeInfo.getJSONArray("authors");
                             String parsedAuthor = authorsArray.getString(0);
-                            Log.d("DEBUG", "parsedAuthor is " + parsedAuthor);
-
                             String parsedDescription = volumeInfo.getString("description");
-                            Log.d("DEBUG", "parsedDescription is " + parsedDescription);
-
                             JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                             String parsedImageUrl = imageLinks.getString("thumbnail");
-                            Log.d("DEBUG", "parsedImage Url is " + parsedImageUrl);
+                            String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
 
-                            String parsedHttpsImageUrl =
-                                    parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
-                            Log.d("DEBUG", "parsedHttpsImageUrl is " + parsedHttpsImageUrl);
-
+                            //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
-                                    parsedHttpsImageUrl, "today");
+                                    parsedHttpsImageUrl, new Timestamp(new Date()),
+                                    currentUserId, currentUserName);
 
-                            unreadBooks.add(newBook)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(MainActivity.this, parsedTitle +
-                                                    "Success! " + parsedTitle + " added to library",
-                                                    Toast.LENGTH_LONG).show();
-                                            Log.d("DEBUG", "Added book from AddBookClass!");
+                            collectionReference.add(newBook)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
 
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.d("DEBUG", "onFailure: " + e.toString());
-                                        }
-                                    });
+                                        //TODO could move to MainActivity here
+                                        Toast.makeText(MainActivity.this, parsedTitle +
+                                                "Success! " + parsedTitle + " added to library",
+                                                Toast.LENGTH_LONG).show();
+                                        Log.d("DEBUG", "Added book from AddBookClass!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("DEBUG", "onFailure: " + e.toString());
+                                    }
+                                });
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -212,6 +234,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         String detailsBook = gson.toJson(bookList.get(position));
         intent.putExtra("book", detailsBook);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (firebaseAuth != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
     }
 }
 

@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import util.BookApi;
+
 public class CreateAccountActivity extends AppCompatActivity {
 
     private MaterialButton loginButton;
@@ -131,6 +133,10 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                     if (Objects.requireNonNull(task).getResult().exists()) {
                                                         String name = task.getResult()
                                                             .getString("username");
+
+                                                        BookApi bookApi = BookApi.getInstance();
+                                                        bookApi.setUserId(currentUserId);
+                                                        bookApi.setUsername(name);
 
                                                         Intent intent =
                                                                 new Intent(CreateAccountActivity.this, MainActivity.class);

@@ -1,5 +1,7 @@
 package com.example.tsundoku;
 
+import com.google.firebase.Timestamp;
+
 import java.util.Date;
 
 public class Book {
@@ -7,18 +9,22 @@ public class Book {
     private String author;
     private String description;
     private String imageUrl;
-    private String dateAdded;
+    private Timestamp timeAdded;
+    private String userId;
+    private String userName;
 
     //We must have an empty constructor for Firestore
     public Book() { }
 
     public Book(String title, String author, String description, String imageUrl,
-                String dateAdded) {
+                Timestamp timeAdded, String userId, String userName) {
         this.title = title;
         this.author = author;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.dateAdded = dateAdded;
+        this.timeAdded = timeAdded;
+        this.userId = userId;
+        this.userName = userName;
     }
 
     public String getTitle() {
@@ -53,11 +59,27 @@ public class Book {
         this.imageUrl = imageUrl;
     }
 
-    public String getDateAdded() {
-        return dateAdded;
+    public Timestamp getTimeAdded() {
+        return timeAdded;
     }
 
-    public void setDateAdded(String dateAdded) {
-        this.dateAdded = dateAdded;
+    public void setTimeAdded(Timestamp timeAdded) {
+        this.timeAdded = timeAdded;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
