@@ -13,12 +13,14 @@ public class Book implements Comparable<Book> {
     private String userId;
     private String userName;
     private Boolean priority;
+    private String status;
 
     //We must have an empty constructor for Firestore
     public Book() { }
 
     public Book(String title, String author, String description, String imageUrl,
-                Timestamp timeAdded, String userId, String userName, Boolean priority) {
+                Timestamp timeAdded, String userId, String userName,
+                Boolean priority, String status) {
         this.title = title;
         this.author = author;
         this.description = description;
@@ -27,6 +29,7 @@ public class Book implements Comparable<Book> {
         this.userId = userId;
         this.userName = userName;
         this.priority = priority;
+        this.status = status;
     }
 
     public String getTitle() {
@@ -91,6 +94,14 @@ public class Book implements Comparable<Book> {
 
     public void setPriority(Boolean priority) {
         this.priority = priority;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,12 +40,15 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import util.BookApi;
 
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     private RequestQueue requestQueue;
     private String currentUserId;
     private String currentUserName;
+    public static final String STATUS_KEY = "status";
 
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton addBookButton;
@@ -161,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
         bookList.clear();
         collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
+            .whereEqualTo("status", "unread")
             .get()
             .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -177,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     myAdapter = new MyAdapter(MainActivity.this, bookList,
                             MainActivity.this);
                     recyclerView.setAdapter(myAdapter);
+                    new ItemTouchHelper(itemTouchHelperCallbackLeft).attachToRecyclerView(recyclerView);
                     myAdapter.notifyDataSetChanged();
                 }
             }
@@ -215,14 +223,15 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
                                     parsedHttpsImageUrl, new Timestamp(new Date()),
-                                    currentUserId, currentUserName, false);
+                                    currentUserId, currentUserName, false, "unread");
 
                             collectionReference.add(newBook)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
                                     public void onSuccess(DocumentReference documentReference) {
-
-                                        //TODO could move to MainActivity here
+                                        bookList.add(newBook);
+                                        Collections.sort(bookList);
+                                        myAdapter.notifyDataSetChanged();
                                         Toast.makeText(MainActivity.this,
                                                 "Success! " + parsedTitle + " added to library",
                                                 Toast.LENGTH_LONG).show();
@@ -272,6 +281,42 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallbackLeft =
+        new ItemTouchHelper.SimpleCallback(0
+        , ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                //update status to "removed"
+                collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
+                        .whereEqualTo("title", bookList.get(viewHolder.getAdapterPosition()).getTitle())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot dbBooks) {
+                                if (!dbBooks.isEmpty()) {
+                                    for (QueryDocumentSnapshot doc : dbBooks) {
+                                        DocumentReference bookRef = doc.getReference();
+                                        Log.d("DEBUG", bookRef.toString());
+                                        Map<String, Object> data = new HashMap<>();
+                                        data.put(STATUS_KEY, "removed");
+                                        bookRef.update(data);
+                                    }
+                                }
+                            }
+                        });
+                bookList.remove(viewHolder.getAdapterPosition());
+                myAdapter.notifyDataSetChanged();
+            }
+
+        };
 }
 
 
