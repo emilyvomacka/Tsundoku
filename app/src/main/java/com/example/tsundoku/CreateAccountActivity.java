@@ -35,17 +35,19 @@ import util.BookApi;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    private MaterialButton loginButton;
-    private MaterialButton createAcctButton;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Users");
 
+    private MaterialButton cancelButton;
+    private MaterialButton createAcctButton;
+
     private TextInputEditText emailEditText;
     private TextInputEditText passwordEditText;
     private TextInputEditText usernameEditText;
+    private TextInputLayout passwordTextInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +57,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         createAcctButton = findViewById(R.id.create_account_button);
+        cancelButton = findViewById(R.id.cancel_button);
         emailEditText = findViewById(R.id.email_account);
-        final TextInputLayout passwordTextInput = findViewById(R.id.password_text_input);
+        passwordTextInput = findViewById(R.id.password_text_input);
         passwordEditText = findViewById(R.id.password_account);
         usernameEditText = findViewById(R.id.username_account);
 
@@ -94,6 +97,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CreateAccountActivity.this, LoginActivity.class));
+                finish();
             }
         });
     }

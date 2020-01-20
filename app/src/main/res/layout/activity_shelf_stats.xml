@@ -6,11 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".ShelfStatsActivity">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Here are the shelf stats you wanted" />
-
+        android:text="Here are the shelf stats you wanted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="52dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -20,6 +23,7 @@
         android:background="@color/primaryDarkColor"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

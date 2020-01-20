@@ -139,8 +139,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     protected void onStart() {
         super.onStart();
 
-        firebaseAuth = FirebaseAuth.getInstance();
-
         if (BookApi.getInstance() != null) {
             currentUserId = BookApi.getInstance().getUserId();
             currentUserName = BookApi.getInstance().getUsername();
@@ -191,11 +189,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
         requestQueue = Volley.newRequestQueue(this);
 
-        Log.d("DEBUG", "requestCode is " + requestCode + ", REQUEST_CODE is " + REQUEST_CODE);
-
         if (requestCode == REQUEST_CODE) {
             String enteredIsbn = data.getStringExtra("scannedIsbn");
-            Log.d("DEBUG", "entered ISBN is " + enteredIsbn);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
@@ -216,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
                             String parsedImageUrl = imageLinks.getString("thumbnail");
                             String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
-
 
                             //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
@@ -239,15 +233,15 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Toast.makeText(MainActivity.this, "Oops, this book could" +
-                                                "not be added to your library. Looks like you get" +
-                                                " a freebie.", Toast.LENGTH_LONG).show();
+                                            "not be added to your library. Get it anyway, we " +
+                                                        "won't tell.",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 });
-
                         } catch (JSONException e) {
                             Toast.makeText(MainActivity.this, "Oops, this book could " +
-                                    "not be added to your library. Get it anyway, I won't tell.",
-                                    Toast.LENGTH_LONG).show();
+                                "not be added to your library. Get it anyway, we won't tell.",
+                                Toast.LENGTH_LONG).show();
                         }
                     }
                 },
