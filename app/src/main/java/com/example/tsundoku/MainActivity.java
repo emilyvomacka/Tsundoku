@@ -75,35 +75,41 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+
         addBookButton = findViewById(R.id.fab);
         bookList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         addBookButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            if (user != null && firebaseAuth != null) {
+                Intent intent = new Intent(MainActivity.this, BarcodeCamera.class);
+                startActivityForResult(intent, REQUEST_CODE);
+            } else {
+                Toast.makeText(MainActivity.this, "You must be logged in to add to your library",
+                        Toast.LENGTH_SHORT).show();
+            }
         });
 
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-//        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-//        bottomNavigationView.getMenuInflater().inflateMenu(R.menu.bottom_nav_menu, );
-//
-//        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-//            switch (item.getItemId()) {
-//                case R.id.library:
-//                    Toast.makeText(MainActivity.this, "My Library", Toast.LENGTH_SHORT).show();
-//                    break;
-//                case R.id.stats:
-//                    Toast.makeText(MainActivity.this, "Shelf Stats", Toast.LENGTH_SHORT).show();
-//                    break;
-//                case R.id.about:
-//                    Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
-//                    break;
-//            }
-//            return true;
-//        });
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.library:
+                    break;
+                case R.id.stats:
+                    startActivity(new Intent(MainActivity.this, ShelfStatsActivity.class));
+                    finish();
+                    break;
+                case R.id.about:
+                    Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return true;
+        });
     }
 
     @Override
@@ -119,7 +125,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
                 break;
             case R.id.main_logout:
-
+                if (user != null && firebaseAuth != null) {
+                    firebaseAuth.signOut();
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    finish();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
