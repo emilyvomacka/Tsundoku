@@ -19,4 +19,5 @@
     <string name="sample_book_title">Book Title</string>
     <string name="create_account_button">Create Account</string>
     <string name="hint_email">Enter email</string>
+    <string name="log_out">Log out</string>
 </resources>

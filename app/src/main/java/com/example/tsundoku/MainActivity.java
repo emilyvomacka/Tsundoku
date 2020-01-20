@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -73,10 +75,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        if (savedInstanceState == null) {
-//            startActivity(new Intent(this, LoginActivity.class));
-//        }
-
         addBookButton = findViewById(R.id.fab);
         bookList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
@@ -87,8 +85,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             startActivityForResult(intent, REQUEST_CODE);
         });
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-//        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
+
+
+//        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+//        bottomNavigationView.getMenuInflater().inflateMenu(R.menu.bottom_nav_menu, );
 //
 //        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
 //            switch (item.getItemId()) {
@@ -104,6 +104,25 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 //            }
 //            return true;
 //        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.main_settings:
+
+                break;
+            case R.id.main_logout:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

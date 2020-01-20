@@ -46,14 +46,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        setTheme(R.style.AppTheme_launcher);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        setTheme(R.style.AppTheme);
         setContentView(R.layout.login_screen);
         super.onCreate(savedInstanceState);
 
