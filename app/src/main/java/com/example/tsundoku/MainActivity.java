@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -134,8 +133,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         firebaseAuth.addAuthStateListener(authStateListener);
 
         bookList.clear();
-        collectionReference
-//                .whereEqualTo("userId", BookApi.getInstance().getUserId())
+        collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
             .get()
             .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
