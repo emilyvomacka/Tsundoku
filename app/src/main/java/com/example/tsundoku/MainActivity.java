@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
                             //parsing book
                             JSONArray bookArray = response.getJSONArray("items");
                             JSONObject bookJSON = bookArray.getJSONObject(0);
@@ -191,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             String parsedImageUrl = imageLinks.getString("thumbnail");
                             String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
 
+
                             //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
                                     parsedHttpsImageUrl, new Timestamp(new Date()),
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                                     public void onSuccess(DocumentReference documentReference) {
 
                                         //TODO could move to MainActivity here
-                                        Toast.makeText(MainActivity.this, parsedTitle +
+                                        Toast.makeText(MainActivity.this,
                                                 "Success! " + parsedTitle + " added to library",
                                                 Toast.LENGTH_LONG).show();
                                         Log.d("DEBUG", "Added book from AddBookClass!");
@@ -211,12 +211,16 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.d("DEBUG", "onFailure: " + e.toString());
+                                        Toast.makeText(MainActivity.this, "Oops, this book could" +
+                                                "not be added to your library. Looks like you get" +
+                                                " a freebie.", Toast.LENGTH_LONG).show();
                                     }
                                 });
 
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, "Oops, this book could " +
+                                    "not be added to your library. Get it anyway, I won't tell.",
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 },

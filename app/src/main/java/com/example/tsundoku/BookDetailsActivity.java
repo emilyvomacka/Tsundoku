@@ -45,10 +45,6 @@ public class BookDetailsActivity extends AppCompatActivity {
                 .fit()
                 .into(this.coverImage);
 
-//        String timeAgo = (String) DateUtils.getRelativeTimeSpanString
-//                        (detailsBook.getDateAdded().getSeconds() * 1000);
-
-
         dateAdded = findViewById(R.id.details_book_date_added);
         String timeAgo =
                 (String) DateUtils.getRelativeTimeSpanString(detailsBook.getTimeAdded().getSeconds() * 1000);
