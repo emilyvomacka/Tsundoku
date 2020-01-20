@@ -9,7 +9,9 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginTop="4dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="4dp"
+        app:strokeColor="@color/secondaryDarkColor" >
+<!--        app:strokeWidth="@{viewmodel.priority ? 1dp : 0dp }" -->
 
         <LinearLayout
             android:layout_width="match_parent"

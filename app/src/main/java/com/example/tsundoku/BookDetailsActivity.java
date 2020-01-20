@@ -50,7 +50,8 @@ public class BookDetailsActivity extends AppCompatActivity {
 
 
         dateAdded = findViewById(R.id.details_book_date_added);
-        dateAdded.setText("today");
+        String timeAgo =
+                (String) DateUtils.getRelativeTimeSpanString(detailsBook.getTimeAdded().getSeconds() * 1000);
+        dateAdded.setText(timeAgo);
     }
-
 }

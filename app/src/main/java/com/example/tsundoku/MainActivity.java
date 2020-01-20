@@ -39,6 +39,7 @@ import org.json.JSONObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -87,9 +88,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             startActivityForResult(intent, REQUEST_CODE);
         });
 
-
-//
-//        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 //        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu);
 //
 //        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -135,7 +134,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         firebaseAuth.addAuthStateListener(authStateListener);
 
         bookList.clear();
-        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        collectionReference
+//                .whereEqualTo("userId", BookApi.getInstance().getUserId())
+            .get()
+            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot dbBooks) {
                 if (!dbBooks.isEmpty()) {
@@ -144,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             bookList.add(book);
                             Log.d("DEBUG", book.getTitle());
                     }
+
+                    Collections.sort(bookList);
 
                     myAdapter = new MyAdapter(MainActivity.this, bookList,
                             MainActivity.this);
@@ -190,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
                                     parsedHttpsImageUrl, new Timestamp(new Date()),
-                                    currentUserId, currentUserName);
+                                    currentUserId, currentUserName, false);
 
                             collectionReference.add(newBook)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

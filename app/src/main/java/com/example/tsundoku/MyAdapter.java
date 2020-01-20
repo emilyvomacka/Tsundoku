@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -49,20 +50,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         holder.title.setText(book.getTitle());
 
-//        String timeAgo = (String) DateUtils.getRelativeTimeSpanString(book.getDateAdded().getSeconds() * 1000);
-        holder.dateAdded.setText("today");
+        String timeAgo = (String) DateUtils.getRelativeTimeSpanString(book.getTimeAdded().getSeconds() * 1000);
+        holder.dateAdded.setText(timeAgo);
+
+        holder.card.setStrokeWidth(book.getPriority() ? 3 : 0);
 
         imageUrl = book.getImageUrl();
 
-        Log.d("DEBUG",
-                "In Picasso image load, title is " + book.getTitle() + ", image url is " + book.getImageUrl() );
-
-        //Use Picasso to download and show image
         Picasso.get()
                 .load(imageUrl)
                 .placeholder(R.drawable.book)
                 .fit()
                 .into(holder.coverImage);
+
     }
 
     @Override
@@ -76,13 +76,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         TextView title, dateAdded;
         ImageView coverImage;
         OnBookListener onBookListener;
+        MaterialCardView card;
 
-        public MyViewHolder(@NonNull View itemView, Context ct, OnBookListener onBookListener) {
+        public MyViewHolder(@NonNull View itemView, Context ct,
+                            OnBookListener onBookListener) {
             super(itemView);
             context = ct;
             coverImage = itemView.findViewById(R.id.mdcImageView);
             title = itemView.findViewById(R.id.mdcTitle);
             dateAdded = itemView.findViewById(R.id.mdcDateAdded);
+            card = (MaterialCardView) itemView;
             this.onBookListener = onBookListener;
             itemView.setOnClickListener(this);
         }

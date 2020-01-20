@@ -4,7 +4,7 @@ import com.google.firebase.Timestamp;
 
 import java.util.Date;
 
-public class Book {
+public class Book implements Comparable<Book> {
     private String title;
     private String author;
     private String description;
@@ -12,12 +12,13 @@ public class Book {
     private Timestamp timeAdded;
     private String userId;
     private String userName;
+    private Boolean priority;
 
     //We must have an empty constructor for Firestore
     public Book() { }
 
     public Book(String title, String author, String description, String imageUrl,
-                Timestamp timeAdded, String userId, String userName) {
+                Timestamp timeAdded, String userId, String userName, Boolean priority) {
         this.title = title;
         this.author = author;
         this.description = description;
@@ -25,6 +26,7 @@ public class Book {
         this.timeAdded = timeAdded;
         this.userId = userId;
         this.userName = userName;
+        this.priority = priority;
     }
 
     public String getTitle() {
@@ -81,5 +83,19 @@ public class Book {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Boolean getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Boolean priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public int compareTo(Book o) {
+        int priorityCmp = o.priority.compareTo(priority);
+        return (priorityCmp != 0 ? priorityCmp : o.timeAdded.compareTo(timeAdded));
     }
 }
