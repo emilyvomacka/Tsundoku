@@ -75,8 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                     passwordTextInput.setError(null); // Clear the error
                     loginEmailPasswordUser(emailEditText.getText().toString().trim(),
                             passwordEditText.getText().toString().trim());
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    startActivity(intent);
                 }
             }
         });
