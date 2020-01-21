@@ -185,8 +185,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     myAdapter = new MyAdapter(MainActivity.this, bookList,
                             MainActivity.this);
                     recyclerView.setAdapter(myAdapter);
-                    new ItemTouchHelper(itemTouchHelperCallbackLeft).attachToRecyclerView(recyclerView);
-                    new ItemTouchHelper(itemTouchHelperCallbackRight).attachToRecyclerView(recyclerView);
+                    new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
                     myAdapter.notifyDataSetChanged();
                 }
             }
@@ -308,8 +307,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         }
     }
 
-    ItemTouchHelper.SimpleCallback itemTouchHelperCallbackLeft =
-        new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+        new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView,
                               @NonNull RecyclerView.ViewHolder viewHolder,
@@ -342,41 +342,41 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         }
     };
 
-    ItemTouchHelper.SimpleCallback itemTouchHelperCallbackRight =
-            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-                @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView,
-                                      @NonNull RecyclerView.ViewHolder viewHolder,
-                                      @NonNull RecyclerView.ViewHolder target) {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    //update priority
-                    boolean currentPriority = bookList.get(viewHolder.getAdapterPosition()).getPriority();
-                    collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
-                            .whereEqualTo("title", bookList.get(viewHolder.getAdapterPosition()).getTitle())
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot dbBooks) {
-                                    if (!dbBooks.isEmpty()) {
-                                        for (QueryDocumentSnapshot doc : dbBooks) {
-                                            DocumentReference bookRef = doc.getReference();
-                                            Map<String, Object> data = new HashMap<>();
-                                            data.put(PRIORITY_KEY, !currentPriority);
-                                            bookRef.update(data);
-                                        }
-                                    }
-                                }
-                            });
-                    bookList.get(viewHolder.getAdapterPosition()).setPriority(!currentPriority);
-                    Collections.sort(bookList);
-                    myAdapter.notifyDataSetChanged();
-                }
-
-            };
+//    ItemTouchHelper.SimpleCallback itemTouchHelperCallbackRight =
+//            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+//                @Override
+//                public boolean onMove(@NonNull RecyclerView recyclerView,
+//                                      @NonNull RecyclerView.ViewHolder viewHolder,
+//                                      @NonNull RecyclerView.ViewHolder target) {
+//                    return false;
+//                }
+//
+//                @Override
+//                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                    //update priority
+//                    boolean currentPriority = bookList.get(viewHolder.getAdapterPosition()).getPriority();
+//                    collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
+//                            .whereEqualTo("title", bookList.get(viewHolder.getAdapterPosition()).getTitle())
+//                            .get()
+//                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                                @Override
+//                                public void onSuccess(QuerySnapshot dbBooks) {
+//                                    if (!dbBooks.isEmpty()) {
+//                                        for (QueryDocumentSnapshot doc : dbBooks) {
+//                                            DocumentReference bookRef = doc.getReference();
+//                                            Map<String, Object> data = new HashMap<>();
+//                                            data.put(PRIORITY_KEY, !currentPriority);
+//                                            bookRef.update(data);
+//                                        }
+//                                    }
+//                                }
+//                            });
+//                    bookList.get(viewHolder.getAdapterPosition()).setPriority(!currentPriority);
+//                    Collections.sort(bookList);
+//                    myAdapter.notifyDataSetChanged();
+//                }
+//
+//            };
 }
 
 
