@@ -110,6 +110,10 @@ public class ShelfStatsActivity extends AppCompatActivity {
             currentUserName = BookApi.getInstance().getUsername();
         }
 
+        statsOne = findViewById(R.id.stats_1);
+        statsTwo = findViewById(R.id.stats_2);
+        statsThree = findViewById(R.id.stats_3);
+
         collectionReference.whereEqualTo("userId", currentUserId)
                 .whereEqualTo("status", "unread")
                 .get()
@@ -122,23 +126,19 @@ public class ShelfStatsActivity extends AppCompatActivity {
                             unreadBookQuantity += 1;
                             unreadPageQuantity += book.getPageCount();
                         }
-
-                        statsOne = findViewById(R.id.stats_1);
-                        statsTwo = findViewById(R.id.stats_2);
-                        statsThree = findViewById(R.id.stats_3);
-
-                        statsOne.setText(unreadBookQuantity == 0 ? "You have no unread books" +
-                                ". Either you're a reading machine or you're not being honest." : "You have " +
-                                unreadBookQuantity + " unread books. We can work with this.");
-
-                        statsTwo.setText(unreadBookQuantity == 0 ? "" : "That's " +
-                                unreadPageQuantity + " pages to go.");
-
-                        statsThree.setText("Tsundoku 2.0 will feature more insights into " +
-                                "what you like to read, and projections of how quickly " +
-                                "you'll get through your stack based on your average reading " +
-                                "speed.");
                     }
+
+                    statsOne.setText(unreadBookQuantity == 0 ? "You have no unread books."
+                             : "You have " +
+                            unreadBookQuantity + " unread books. We can work with this.");
+
+                    statsTwo.setText(unreadBookQuantity == 0 ? "Either you're a reading machine or you're not being honest." : "That's " +
+                            unreadPageQuantity + " pages to go.");
+
+                    statsThree.setText("Tsundoku 2.0 will feature more insights into " +
+                            "what you like to read, and projections of how quickly " +
+                            "you'll get through your stack based on your average reading " +
+                            "speed.");
                 }
             });
     }

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     private ArrayList<Book> bookList;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
+
+    private Toast noBooksToast;
 
     private final int REQUEST_CODE = 2;
 
@@ -189,6 +193,17 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                 }
             }
         });
+
+        if (bookList.isEmpty()) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            noBooksToast = Toast.makeText(MainActivity.this, "Scan books into your unread library" +
+                    " via the red button", Toast.LENGTH_LONG);
+            noBooksToast.show();
+        }
     }
 
     @Override
