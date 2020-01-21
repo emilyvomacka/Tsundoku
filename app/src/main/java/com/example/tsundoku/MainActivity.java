@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             JSONArray bookArray = response.getJSONArray("items");
                             JSONObject bookJSON = bookArray.getJSONObject(0);
                             JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
+                            Integer pageCount = Integer.parseInt(volumeInfo.getString("pageCount"));
                             String parsedTitle = volumeInfo.getString("title");
                             JSONArray authorsArray = volumeInfo.getJSONArray("authors");
                             String parsedAuthor = authorsArray.getString(0);
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                             //Adding book
                             Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
                                     parsedHttpsImageUrl, new Timestamp(new Date()),
-                                    currentUserId, currentUserName, false, "unread");
+                                    currentUserId, currentUserName, false, "unread", pageCount);
 
                             collectionReference.add(newBook)
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -242,14 +243,13 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(MainActivity.this, "Oops, this book could" +
-                                            "not be added to your library. Get it anyway, we " +
-                                                        "won't tell.",
+                                        Toast.makeText(MainActivity.this, "This book could" +
+                                            "not be added to your library. Get it anyway, we won't tell.",
                                                 Toast.LENGTH_LONG).show();
                                     }
                                 });
                         } catch (JSONException e) {
-                            Toast.makeText(MainActivity.this, "Oops, this book could " +
+                            Toast.makeText(MainActivity.this, "This book could " +
                                 "not be added to your library. Get it anyway, we won't tell.",
                                 Toast.LENGTH_LONG).show();
                         }
@@ -320,8 +320,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             //update status to "removed"
+            String removedTitle = bookList.get(viewHolder.getAdapterPosition()).getTitle();
             collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
-                    .whereEqualTo("title", bookList.get(viewHolder.getAdapterPosition()).getTitle())
+                    .whereEqualTo("title", removedTitle)
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
@@ -339,44 +340,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     });
             bookList.remove(viewHolder.getAdapterPosition());
             myAdapter.notifyDataSetChanged();
+            Toast.makeText(getBaseContext(), removedTitle + " has been removed from your library"
+                    , Toast.LENGTH_SHORT).show();
         }
     };
-
-//    ItemTouchHelper.SimpleCallback itemTouchHelperCallbackRight =
-//            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-//                @Override
-//                public boolean onMove(@NonNull RecyclerView recyclerView,
-//                                      @NonNull RecyclerView.ViewHolder viewHolder,
-//                                      @NonNull RecyclerView.ViewHolder target) {
-//                    return false;
-//                }
-//
-//                @Override
-//                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-//                    //update priority
-//                    boolean currentPriority = bookList.get(viewHolder.getAdapterPosition()).getPriority();
-//                    collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
-//                            .whereEqualTo("title", bookList.get(viewHolder.getAdapterPosition()).getTitle())
-//                            .get()
-//                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                                @Override
-//                                public void onSuccess(QuerySnapshot dbBooks) {
-//                                    if (!dbBooks.isEmpty()) {
-//                                        for (QueryDocumentSnapshot doc : dbBooks) {
-//                                            DocumentReference bookRef = doc.getReference();
-//                                            Map<String, Object> data = new HashMap<>();
-//                                            data.put(PRIORITY_KEY, !currentPriority);
-//                                            bookRef.update(data);
-//                                        }
-//                                    }
-//                                }
-//                            });
-//                    bookList.get(viewHolder.getAdapterPosition()).setPriority(!currentPriority);
-//                    Collections.sort(bookList);
-//                    myAdapter.notifyDataSetChanged();
-//                }
-//
-//            };
 }
 
 
