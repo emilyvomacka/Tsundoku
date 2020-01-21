@@ -190,20 +190,18 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     recyclerView.setAdapter(myAdapter);
                     new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
                     myAdapter.notifyDataSetChanged();
+                } else {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    noBooksToast = Toast.makeText(MainActivity.this, "Scan books into your unread library" +
+                            " via the red button", Toast.LENGTH_LONG);
+                    noBooksToast.show();
                 }
             }
         });
-
-        if (bookList.isEmpty()) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            noBooksToast = Toast.makeText(MainActivity.this, "Scan books into your unread library" +
-                    " via the red button", Toast.LENGTH_LONG);
-            noBooksToast.show();
-        }
     }
 
     @Override
@@ -249,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                                         Collections.sort(bookList);
                                         myAdapter.notifyDataSetChanged();
                                         Toast.makeText(MainActivity.this,
-                                                "Success! " + parsedTitle + " added to library",
+                                                "Success! " + parsedTitle + " was added to " +
+                                                        "your library.",
                                                 Toast.LENGTH_LONG).show();
                                         Log.d("DEBUG", "Added book from AddBookClass!");
                                     }
