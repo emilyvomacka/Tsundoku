@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     finish();
                     break;
                 case R.id.maps:
-                    Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Maps", Toast.LENGTH_SHORT).show();
                     break;
             }
             return true;
