@@ -109,10 +109,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     break;
                 case R.id.stats:
                     startActivity(new Intent(MainActivity.this, ShelfStatsActivity.class));
-                    finish();
                     break;
                 case R.id.maps:
-                    Toast.makeText(MainActivity.this, "Maps", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, BookstoresActivity.class));
                     break;
             }
             return true;

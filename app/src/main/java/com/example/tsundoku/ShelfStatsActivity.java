@@ -1,10 +1,13 @@
 package com.example.tsundoku;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +29,13 @@ public class ShelfStatsActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
 
-    private CollectionReference unreadBooks;
+    private CollectionReference collectionReference = db.collection("Unread Books");
     private int unreadBookQuantity;
     private int unreadPageQuantity;
     private TextView statsOne, statsTwo, statsThree;
+
+    private String currentUserId;
+    private String currentUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +54,8 @@ public class ShelfStatsActivity extends AppCompatActivity {
 
                     break;
                 case R.id.maps:
-                    Toast.makeText(ShelfStatsActivity.this, "Maps", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(ShelfStatsActivity.this, BookstoresActivity.class));
+                    finish();
                     break;
             }
             return true;
@@ -59,11 +66,53 @@ public class ShelfStatsActivity extends AppCompatActivity {
 
     firebaseAuth = FirebaseAuth.getInstance();
     user = firebaseAuth.getCurrentUser();
-    Log.d("DEBUG", BookApi.getInstance().getUsername());
 
-    unreadBooks.whereEqualTo("userId", BookApi.getInstance().getUserId())
-            .whereEqualTo("status", "unread")
-            .get()
+    authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+
+                }
+            }
+        };
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.main_settings:
+
+                break;
+            case R.id.main_logout:
+                if (user != null && firebaseAuth != null) {
+                    firebaseAuth.signOut();
+                    startActivity(new Intent(ShelfStatsActivity.this, LoginActivity.class));
+                    finish();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (BookApi.getInstance() != null) {
+            currentUserId = BookApi.getInstance().getUserId();
+            currentUserName = BookApi.getInstance().getUsername();
+        }
+
+        collectionReference.whereEqualTo("userId", currentUserId)
+                .whereEqualTo("status", "unread")
+                .get()
             .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot dbBooks) {
@@ -73,18 +122,24 @@ public class ShelfStatsActivity extends AppCompatActivity {
                             unreadBookQuantity += 1;
                             unreadPageQuantity += book.getPageCount();
                         }
+
+                        statsOne = findViewById(R.id.stats_1);
+                        statsTwo = findViewById(R.id.stats_2);
+                        statsThree = findViewById(R.id.stats_3);
+
+                        statsOne.setText(unreadBookQuantity == 0 ? "You have no unread books" +
+                                ". Either you're a reading machine or you're not being honest." : "You have " +
+                                unreadBookQuantity + " unread books. We can work with this.");
+
+                        statsTwo.setText(unreadBookQuantity == 0 ? "" : "That's " +
+                                unreadPageQuantity + " pages to go.");
+
+                        statsThree.setText("Tsundoku 2.0 will feature more insights into " +
+                                "what you like to read, and projections of how quickly " +
+                                "you'll get through your stack based on your average reading " +
+                                "speed.");
                     }
                 }
             });
-
-    statsOne = findViewById(R.id.stats_1);
-    statsTwo = findViewById(R.id.stats_2);
-    statsThree = findViewById(R.id.stats_3);
-
-    statsOne.setText(unreadBookQuantity == 0 ? "You have no unread books" : "You have " +
-            unreadBookQuantity + " unread books.");
-
     }
-
-
 }
