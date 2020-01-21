@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.login_screen);
         super.onCreate(savedInstanceState);
 
