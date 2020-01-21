@@ -20,4 +20,5 @@
     <string name="create_account_button">Create Account</string>
     <string name="hint_email">Enter email</string>
     <string name="log_out">Log out</string>
+    <string name="maps">My Bookstores</string>
 </resources>
