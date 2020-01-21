@@ -132,8 +132,9 @@ public class ShelfStatsActivity extends AppCompatActivity {
                              : "You have " +
                             unreadBookQuantity + " unread books. We can work with this.");
 
-                    statsTwo.setText(unreadBookQuantity == 0 ? "Either you're a reading machine or you're not being honest." : "That's " +
-                            unreadPageQuantity + " pages to go.");
+                    statsTwo.setText(unreadBookQuantity == 0 ? "Either you're a reading machine " +
+                            "or you're not being honest." : "That's a mere " +
+                            unreadPageQuantity + " pages to go!");
 
                     statsThree.setText("Tsundoku 2.0 will feature more insights into " +
                             "what you like to read, and projections of how quickly " +
