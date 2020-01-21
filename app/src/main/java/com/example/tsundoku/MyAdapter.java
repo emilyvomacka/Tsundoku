@@ -71,7 +71,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return bookList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            View.OnLongClickListener {
 
         TextView title, dateAdded;
         ImageView coverImage;
@@ -88,15 +89,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             card = (MaterialCardView) itemView;
             this.onBookListener = onBookListener;
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             onBookListener.onBookClick(getAdapterPosition());
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            onBookListener.onLongBookClick(getAdapterPosition());
+            return true;
+        }
     }
 
     public interface OnBookListener{
         void onBookClick(int position);
+        void onLongBookClick(int position);
     }
+
 }

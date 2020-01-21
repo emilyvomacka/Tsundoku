@@ -277,6 +277,30 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     }
 
     @Override
+    public void onLongBookClick(int position) {
+        boolean currentPriority = bookList.get(position).getPriority();
+        collectionReference.whereEqualTo("userId", BookApi.getInstance().getUserId())
+                .whereEqualTo("title", bookList.get(position).getTitle())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot dbBooks) {
+                        if (!dbBooks.isEmpty()) {
+                            for (QueryDocumentSnapshot doc : dbBooks) {
+                                DocumentReference bookRef = doc.getReference();
+                                Map<String, Object> data = new HashMap<>();
+                                data.put(PRIORITY_KEY, !currentPriority);
+                                bookRef.update(data);
+                            }
+                        }
+                    }
+                });
+        bookList.get(position).setPriority(!currentPriority);
+        Collections.sort(bookList);
+        myAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if (firebaseAuth != null) {
