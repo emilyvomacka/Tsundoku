@@ -6,7 +6,7 @@
     <item android:id="@+id/stats"
         android:icon="@drawable/ic_stat_name"
         android:title="@string/shelf_stats" />
-    <item android:id="@+id/about"
+    <item android:id="@+id/maps"
         android:title="@string/maps"
         android:icon="@drawable/ic_geo"/>
 </menu>

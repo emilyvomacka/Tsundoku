@@ -13,8 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
-        android:fontFamily="@font/playfair_display_bold"
-        android:text="Your Shelf Stats"
+        android:fontFamily="@font/playfair_display_reg"
+        android:text="Shelf Stats"
         android:textColor="@color/primaryTextColor"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/stats_books_read"
+        android:id="@+id/stats_unread_books"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
@@ -34,31 +34,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/stats_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:fontFamily="@font/playfair_display_bold"
-        android:text="Your Shelf Stats"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/stats_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:fontFamily="@font/playfair_display_bold"
-        android:text="Your Shelf Stats"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

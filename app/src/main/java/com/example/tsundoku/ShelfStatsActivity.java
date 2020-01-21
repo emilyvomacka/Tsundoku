@@ -27,11 +27,13 @@ public class ShelfStatsActivity extends AppCompatActivity {
                 case R.id.stats:
 
                     break;
-                case R.id.about:
-                    Toast.makeText(ShelfStatsActivity.this, "About", Toast.LENGTH_SHORT).show();
+                case R.id.maps:
+                    Toast.makeText(ShelfStatsActivity.this, "Maps", Toast.LENGTH_SHORT).show();
                     break;
             }
             return true;
         });
+
+
     }
 }
