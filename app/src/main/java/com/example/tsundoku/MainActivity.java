@@ -211,71 +211,74 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         requestQueue = Volley.newRequestQueue(this);
 
         if (requestCode == REQUEST_CODE) {
-            String enteredIsbn = data.getStringExtra("scannedIsbn");
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                        "&key=" + BOOKS_TOKEN, null,
+            if (resultCode == RESULT_OK) {
+                String enteredIsbn = data.getStringExtra("scannedIsbn");
 
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            //parsing book
-                            JSONArray bookArray = response.getJSONArray("items");
-                            JSONObject bookJSON = bookArray.getJSONObject(0);
-                            JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
-                            Integer pageCount = Integer.parseInt(volumeInfo.getString("pageCount"));
-                            String parsedTitle = volumeInfo.getString("title");
-                            JSONArray authorsArray = volumeInfo.getJSONArray("authors");
-                            String parsedAuthor = authorsArray.getString(0);
-                            String parsedDescription = volumeInfo.getString("description");
-                            JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                            String parsedImageUrl = imageLinks.getString("thumbnail");
-                            String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                        "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
+                                "&key=" + BOOKS_TOKEN, null,
 
-                            //Adding book
-                            Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
-                                    parsedHttpsImageUrl, new Timestamp(new Date()),
-                                    currentUserId, currentUserName, false, "unread", pageCount);
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    //parsing book
+                                    JSONArray bookArray = response.getJSONArray("items");
+                                    JSONObject bookJSON = bookArray.getJSONObject(0);
+                                    JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
+                                    Integer pageCount = Integer.parseInt(volumeInfo.getString("pageCount"));
+                                    String parsedTitle = volumeInfo.getString("title");
+                                    JSONArray authorsArray = volumeInfo.getJSONArray("authors");
+                                    String parsedAuthor = authorsArray.getString(0);
+                                    String parsedDescription = volumeInfo.getString("description");
+                                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                                    String parsedImageUrl = imageLinks.getString("thumbnail");
+                                    String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
 
-                            collectionReference.add(newBook)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        bookList.add(newBook);
-                                        Collections.sort(bookList);
-                                        myAdapter.notifyDataSetChanged();
-                                        Toast.makeText(MainActivity.this,
-                                                "Success! " + parsedTitle + " was added to " +
-                                                        "your library.",
-                                                Toast.LENGTH_LONG).show();
-                                        Log.d("DEBUG", "Added book from AddBookClass!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(MainActivity.this, "This book could" +
-                                            "not be added to your library. Get it anyway, we won't tell.",
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                        } catch (JSONException e) {
-                            Toast.makeText(MainActivity.this, "This book could " +
-                                "not be added to your library. Get it anyway, we won't tell.",
-                                Toast.LENGTH_LONG).show();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("DEBUG", "onErrorResponse: " + error.getMessage());
-                    }
-                });
+                                    //Adding book
+                                    Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
+                                            parsedHttpsImageUrl, new Timestamp(new Date()),
+                                            currentUserId, currentUserName, false, "unread", pageCount);
 
-            requestQueue.add(jsonObjectRequest);
+                                    collectionReference.add(newBook)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    bookList.add(newBook);
+                                                    Collections.sort(bookList);
+                                                    myAdapter.notifyDataSetChanged();
+                                                    Toast.makeText(MainActivity.this,
+                                                            "Success! " + parsedTitle + " was added to " +
+                                                                    "your library.",
+                                                            Toast.LENGTH_LONG).show();
+                                                    Log.d("DEBUG", "Added book from AddBookClass!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(MainActivity.this, "This book could" +
+                                                                    "not be added to your library. Get it anyway, we won't tell.",
+                                                            Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                } catch (JSONException e) {
+                                    Toast.makeText(MainActivity.this, "This book could " +
+                                                    "not be added to your library. Get it anyway, we won't tell.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("DEBUG", "onErrorResponse: " + error.getMessage());
+                            }
+                        });
+
+                requestQueue.add(jsonObjectRequest);
+            }
         }
     }
 
