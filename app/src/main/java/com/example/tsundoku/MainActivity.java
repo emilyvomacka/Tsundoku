@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         Intent geoIntent = new Intent(this, GeofenceBroadcastReceiver.class);
         geoIntent.setAction(ACTION_GEOFENCE_EVENT);
         PendingIntent.getBroadcast(this, 0, geoIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        GeofencingClient geofencingClient = LocationServices.getGeofencingClient(this);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -161,50 +161,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
         checkPermissionsAndStartGeofencing();
 
-        requestForegroundAndBackgroundLocationPermissions();
-
-        geofenceList = new ArrayList<Geofence>();
-
-        geofenceList.add(new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId("elliot bay books")
-                .setCircularRegion(
-                        47.614756,
-                        -122.319433,
-                        100
-                )
-                .setExpirationDuration(TimeUnit.HOURS.toMillis(1))
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build());
-
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[] { Manifest.permission.ACCESS_BACKGROUND_LOCATION },
-                        2);
-            } else {
-
-            // Background location runtime permission already granted.
-            // You can now call geofencingClient.addGeofences().
-        }
-
-        geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("DEBUG", "elliot bay geofence added");
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("DEBUG", "no geofences: " + e);
-                    }
-                });
     }
 
     @Override
@@ -451,9 +407,12 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
 
     public void checkPermissionsAndStartGeofencing() {
+        Log.d("DEBUG", "checkPermissionsAndStartGeofencing");
         if (foregroundAndBackgroundLocationPermissionApproved()) {
+            Log.d("DEBUG", "foreground and background location settings approved");
             checkDeviceLocationSettingsAndStartGeofence();
         } else {
+            Log.d("DEBUG", "foreground and background location settings not approved");
             requestForegroundAndBackgroundLocationPermissions();
         }
     }
@@ -464,8 +423,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
         if (grantResults.length == 0 || grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED || (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED))
         {
-            Toast.makeText(this, "Location permissions denied", Toast.LENGTH_LONG).show();
+            Log.d("DEBUG", "permissions requests denied");
         } else {
+            Log.d("DEBUG", "permissions requests approved");
             checkDeviceLocationSettingsAndStartGeofence();
         }
     }
@@ -490,6 +450,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
     @TargetApi(29)
     private void requestForegroundAndBackgroundLocationPermissions() {
+        Log.d("DEBUG", "requestForegroundAndBackgroundLocationPermissions");
         ArrayList<String> permissionsArray = new ArrayList<String>();
         if (foregroundAndBackgroundLocationPermissionApproved()) {
             return;
@@ -510,14 +471,13 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             resultCode = REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE;
         }
 
-        Log.d("DEBUG", "Request foreground only location permission");
-
         ActivityCompat.requestPermissions(MainActivity.this,
                 permissionsArray.toArray(new String[permissionsArray.size()]),
                 resultCode);
     }
 
     private void checkDeviceLocationSettingsAndStartGeofence() {
+        Log.d("DEBUG", "MADE IT TO CHECKDEVICELOCATIONSANDSTARTGEOFENCE YAY");
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
@@ -553,12 +513,16 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         }).addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                Log.d("DEBUG", "location settings all good");
                 addBookGeofences();
             }
         });
     }
 
-    private final void addBookGeofences() {
+    public final void addBookGeofences() {
+        Log.d("DEBUG", "made it to addBookGeofences");
+        geofenceList = new ArrayList<Geofence>();
+
         geofenceList.add(new Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this
                 // geofence.
@@ -572,8 +536,39 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
-        Log.d("DEBUG", "geofence added to list");
-    }
+
+//        if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            Log.d("DEBUG", "addbookgeofences says ACCESS BACKGROUND DENIED");
+//            ActivityCompat.requestPermissions(MainActivity.this,
+//                    new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+//                    2);
+//        } else {
+
+            // Background location runtime permission already granted.
+            // You can now call geofencingClient.addGeofences().
+            Log.d("DEBUG", "addbookgeofences says location is all good");
+
+            GeofencingClient geofencingClient = LocationServices.getGeofencingClient(this);
+
+            geofencingClient.addGeofences(getGeofencingRequest(),
+                    this.getGeofencePendingIntent())
+                    .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("DEBUG", "elliot bay geofence added");
+                        }
+                    })
+                    .addOnFailureListener(this, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("DEBUG", "no geofences: " + e);
+                        }
+                    });
+        }
+
 
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
