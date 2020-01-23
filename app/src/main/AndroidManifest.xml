@@ -22,7 +22,10 @@
             android:name=".BarcodeCamera"
             android:parentActivityName=".MainActivity">
         </activity>
-        <receiver android:name=".GeofenceBroadcastReceiver"/>
+        <receiver
+            android:name=".GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"/>
         <activity android:name=".MainActivity" />
         <activity android:name=".BookstoresActivity" />
         <activity android:name=".ShelfStatsActivity" />

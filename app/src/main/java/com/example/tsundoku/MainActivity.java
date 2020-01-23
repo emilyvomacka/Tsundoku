@@ -119,11 +119,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent geoIntent = new Intent(this, GeofenceBroadcastReceiver.class);
-        geoIntent.setAction(ACTION_GEOFENCE_EVENT);
-        PendingIntent.getBroadcast(this, 0, geoIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
@@ -500,14 +495,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     } catch (IntentSender.SendIntentException sendEx) {
                         Log.d("DEBUG", "Error getting location settings resolution: " + sendEx.getMessage());
                     }
-                } else {
-                    //                Snackbar.make(
-                    //                        binding.activityMapsMain,
-                    //                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
-                    //                ).setAction(android.R.string.ok) {
-                    //                    checkDeviceLocationSettingsAndStartGeofence()
-                    //                }.show();
-                    //                }
                 }
             }
         }).addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
@@ -532,24 +519,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                         -122.319433,
                         100
                 )
-                .setExpirationDuration(TimeUnit.HOURS.toMillis(1))
+                .setExpirationDuration((Geofence.NEVER_EXPIRE))
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
-
-//        if (ContextCompat.checkSelfPermission(MainActivity.this,
-//                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            Log.d("DEBUG", "addbookgeofences says ACCESS BACKGROUND DENIED");
-//            ActivityCompat.requestPermissions(MainActivity.this,
-//                    new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-//                    2);
-//        } else {
-
-            // Background location runtime permission already granted.
-            // You can now call geofencingClient.addGeofences().
-            Log.d("DEBUG", "addbookgeofences says location is all good");
 
             GeofencingClient geofencingClient = LocationServices.getGeofencingClient(this);
 
