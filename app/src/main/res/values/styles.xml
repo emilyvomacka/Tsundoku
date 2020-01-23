@@ -8,9 +8,6 @@
         <item name="colorAccent">@color/secondaryColor</item>
     </style>
 
-    <style name="ToolbarTheme" parent="Theme.MaterialComponents.Light">
-        <item name="android:fontFamily">@font/im_fell_font</item>
-    </style>
 
     <style name="AppTheme.launcher">
     <item name="android:windowBackground">@drawable/launch_screen</item>

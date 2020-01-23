@@ -11,18 +11,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import android.text.format.DateUtils;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     Context context;
-    private List<Book> bookList;
+    private ArrayList<Book> bookList;
+    private OnBookListener mOnBookListener;
 
-    public MyAdapter(Context ct, List<Book> bookList) {
+    public MyAdapter(Context ct, ArrayList<Book> bookList, OnBookListener onBookListener) {
         this.context = ct;
         this.bookList = bookList;
+        this.mOnBookListener = onBookListener;
     }
 
     @NonNull
@@ -31,7 +39,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.my_row, parent, false);
 
-        return new MyViewHolder(view, context);
+        return new MyViewHolder(view, context, mOnBookListener);
     }
 
     @Override
@@ -42,17 +50,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         holder.title.setText(book.getTitle());
 
+        String timeAgo = (String) DateUtils.getRelativeTimeSpanString(book.getTimeAdded().getSeconds() * 1000);
+        holder.dateAdded.setText(timeAgo);
+
+        holder.card.setStrokeWidth(book.getPriority() ? 3 : 0);
+
         imageUrl = book.getImageUrl();
 
-        Log.d("DEBUG",
-                "In Picasso image load, title is " + book.getTitle() + ", image url is " + book.getImageUrl() );
-
-        //Use Picasso to download and show image
         Picasso.get()
                 .load(imageUrl)
                 .placeholder(R.drawable.book)
                 .fit()
                 .into(holder.coverImage);
+
     }
 
     @Override
@@ -61,16 +71,42 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return bookList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            View.OnLongClickListener {
 
-        TextView title;
+        TextView title, dateAdded;
         ImageView coverImage;
+        OnBookListener onBookListener;
+        MaterialCardView card;
 
-        public MyViewHolder(@NonNull View itemView, Context ct) {
+        public MyViewHolder(@NonNull View itemView, Context ct,
+                            OnBookListener onBookListener) {
             super(itemView);
             context = ct;
-            title = itemView.findViewById(R.id.myText1);
-            coverImage = itemView.findViewById(R.id.myImageView);
+            coverImage = itemView.findViewById(R.id.mdcImageView);
+            title = itemView.findViewById(R.id.mdcTitle);
+            dateAdded = itemView.findViewById(R.id.mdcDateAdded);
+            card = (MaterialCardView) itemView;
+            this.onBookListener = onBookListener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onBookListener.onBookClick(getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            onBookListener.onLongBookClick(getAdapterPosition());
+            return true;
         }
     }
+
+    public interface OnBookListener{
+        void onBookClick(int position);
+        void onLongBookClick(int position);
+    }
+
 }
