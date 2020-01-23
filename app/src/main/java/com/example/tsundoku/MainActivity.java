@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
@@ -78,6 +81,7 @@ import static com.example.tsundoku.Constants.BOOKS_MAPS_TOKEN;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookListener {
 
+    private static final String CHANNEL_ID = "TSUNDOKU";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -118,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        createNotificationChannel();
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -402,7 +408,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
 
 
     public void checkPermissionsAndStartGeofencing() {
-        Log.d("DEBUG", "checkPermissionsAndStartGeofencing");
         if (foregroundAndBackgroundLocationPermissionApproved()) {
             Log.d("DEBUG", "foreground and background location settings approved");
             checkDeviceLocationSettingsAndStartGeofence();
@@ -472,7 +477,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     }
 
     private void checkDeviceLocationSettingsAndStartGeofence() {
-        Log.d("DEBUG", "MADE IT TO CHECKDEVICELOCATIONSANDSTARTGEOFENCE YAY");
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
@@ -517,11 +521,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                 .setCircularRegion(
                         47.614756,
                         -122.319433,
-                        100
+                        100f
                 )
                 .setExpirationDuration((Geofence.NEVER_EXPIRE))
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build());
 
             GeofencingClient geofencingClient = LocationServices.getGeofencingClient(this);
@@ -542,7 +545,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
                     });
         }
 
-
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
@@ -561,6 +563,23 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.
                 FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+            Log.d("DEBUG", "Channel created");
+        }
     }
 
 }

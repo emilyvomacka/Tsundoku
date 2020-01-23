@@ -26,4 +26,6 @@
     <string name="third_place_books_location">Third Place Books</string>
     <string name="mercer_st_books_location">Mercer St Books</string>
     <string name="phinney_books_location">Phinney Books</string>
+    <string name="channel_name">tsundoku_notifications</string>
+    <string name="channel_description">tsundoku notifications</string>
 </resources>

@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
@@ -13,43 +16,40 @@ import java.util.List;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private String TAG = "DEBUG";
+    private static final String CHANNEL_ID = "TSUNDOKU";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        if (geofencingEvent.hasError()) {
+            String errorMessage =
+                    GeofenceStatusCodes.getStatusCodeString(geofencingEvent.getErrorCode());
+            Log.d(TAG, errorMessage);
+            return;
+        }
 
-        Log.d("DEBUG", "YOU HIT THE ELLIOT BAY GEOFENCE");
-//        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-//        if (geofencingEvent.hasError()) {
-//            String errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.getErrorCode());
-//            Log.d(TAG, errorMessage);
-//            return;
-//        }
-//
-//        // Get the transition type.
-//        int geofenceTransition = geofencingEvent.getGeofenceTransition();
-//
-//        // Test that the reported transition was of interest.
-//        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-//                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-//
-//            // Get the geofences that were triggered. A single event can trigger
-//            // multiple geofences.
-//            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-//
-//            // Get the transition details as a String.
-//            String geofenceTransitionDetails = getGeofenceTransitionDetails(
-//                    this,
-//                    geofenceTransition,
-//                    triggeringGeofences
-//            );
-//
-//            // Send notification and log the transition details.
-//            Log.d(TAG, geofenceTransitionDetails);
-//        } else {
-//            // Log the error.
-//            Log.d(TAG, getString(R.string.geofence_transition_invalid_type,
-//                    geofenceTransition));
-//        }
-//
-   }
+        // Get the transition type.
+        int geofenceTransition = geofencingEvent.getGeofenceTransition();
+
+        int notificationId = 1;
+
+        // Test that the reported transition was of interest.
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(context, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.book_stack)
+                    .setContentTitle("YOU HAVE BOOKS AT HOME")
+                    .setContentText("Might be a good time to check in with your unread book stack?")
+                    .setPriority(NotificationCompat.PRIORITY_MAX);
+
+            NotificationManagerCompat notificationManager =
+                    NotificationManagerCompat.from(context);
+
+            notificationManager.notify(notificationId, builder.build());
+            notificationId += 1;
+            Log.d(TAG, "geofence hit");
+        }
+    }
 }
