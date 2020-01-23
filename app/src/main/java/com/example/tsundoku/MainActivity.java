@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,6 +68,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import util.BookApi;
 
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q;
     private @Nullable ScriptGroup.Binding binding;
     private @Nullable GeofenceViewModel viewModel;
+    private GeofencingClient geofencingClient;
     private int REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33;
     private int REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34;
     private int REQUEST_TURN_DEVICE_LOCATION_ON = 29;
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     private int BACKGROUND_LOCATION_PERMISSION_INDEX = 1;
     private PendingIntent geofencePendingIntent;
     private String ACTION_GEOFENCE_EVENT = "MainActivity.action.ACTION_GEOFENCE_EVENT";
+    private List<Geofence> geofenceList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +158,53 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             }
             return true;
         });
+
+        checkPermissionsAndStartGeofencing();
+
+        requestForegroundAndBackgroundLocationPermissions();
+
+        geofenceList = new ArrayList<Geofence>();
+
+        geofenceList.add(new Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("elliot bay books")
+                .setCircularRegion(
+                        47.614756,
+                        -122.319433,
+                        100
+                )
+                .setExpirationDuration(TimeUnit.HOURS.toMillis(1))
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[] { Manifest.permission.ACCESS_BACKGROUND_LOCATION },
+                        2);
+            } else {
+
+            // Background location runtime permission already granted.
+            // You can now call geofencingClient.addGeofences().
+        }
+
+        geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("DEBUG", "elliot bay geofence added");
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("DEBUG", "no geofences: " + e);
+                    }
+                });
     }
 
     @Override
@@ -249,60 +300,61 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
             if (resultCode == RESULT_OK) {
                 String enteredIsbn = data.getStringExtra("scannedIsbn");
 
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
-                        "&key=" + BOOKS_MAPS_TOKEN, null)
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                        "https://www.googleapis.com/books/v1/volumes?q=+isbn:" + enteredIsbn +
+                                "&key=" + BOOKS_MAPS_TOKEN, null,
 
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            //parsing book
-                            JSONArray bookArray = response.getJSONArray("items");
-                            JSONObject bookJSON = bookArray.getJSONObject(0);
-                            JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
-                            Integer pageCount = Integer.parseInt(volumeInfo.getString("pageCount"));
-                            String parsedTitle = volumeInfo.getString("title");
-                            JSONArray authorsArray = volumeInfo.getJSONArray("authors");
-                            String parsedAuthor = authorsArray.getString(0);
-                            String parsedDescription = volumeInfo.getString("description");
-                            JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                            String parsedImageUrl = imageLinks.getString("thumbnail");
-                            String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    //parsing book
+                                    JSONArray bookArray = response.getJSONArray("items");
+                                    JSONObject bookJSON = bookArray.getJSONObject(0);
+                                    JSONObject volumeInfo = bookJSON.getJSONObject("volumeInfo");
+                                    Integer pageCount = Integer.parseInt(volumeInfo.getString("pageCount"));
+                                    String parsedTitle = volumeInfo.getString("title");
+                                    JSONArray authorsArray = volumeInfo.getJSONArray("authors");
+                                    String parsedAuthor = authorsArray.getString(0);
+                                    String parsedDescription = volumeInfo.getString("description");
+                                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                                    String parsedImageUrl = imageLinks.getString("thumbnail");
+                                    String parsedHttpsImageUrl = parsedImageUrl.substring(0, 4) + "s" + parsedImageUrl.substring(4);
 
-                            //Adding book
-                            Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
-                                    parsedHttpsImageUrl, new Timestamp(new Date()),
-                                    currentUserId, currentUserName, false, "unread", pageCount);
+                                    //Adding book
+                                    Book newBook = new Book(parsedTitle, parsedAuthor, parsedDescription,
+                                            parsedHttpsImageUrl, new Timestamp(new Date()),
+                                            currentUserId, currentUserName, false, "unread", pageCount);
 
-                            collectionReference.add(newBook)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            bookList.add(newBook);
-                                            Collections.sort(bookList);
-                                            myAdapter.notifyDataSetChanged();
-                                            Toast.makeText(MainActivity.this,
-                                                    "Success! " + parsedTitle + " was added to " +
-                                                            "your library.",
-                                                    Toast.LENGTH_LONG).show();
-                                            Log.d("DEBUG", "Added book from AddBookClass!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(MainActivity.this, "This book could" +
-                                                            "not be added to your library. Get it anyway, we won't tell.",
-                                                    Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                        } catch (JSONException e) {
-                            Toast.makeText(MainActivity.this, "This book could " +
-                                            "not be added to your library. Get it anyway, we won't tell.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                },
+                                    collectionReference.add(newBook)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    bookList.add(newBook);
+                                                    Collections.sort(bookList);
+                                                    myAdapter.notifyDataSetChanged();
+                                                    Toast.makeText(MainActivity.this,
+                                                            "Success! " + parsedTitle + " was added to " +
+                                                                    "your library.",
+                                                            Toast.LENGTH_LONG).show();
+                                                    Log.d("DEBUG", "Added book from AddBookClass!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(MainActivity.this, "This book could" +
+                                                                    "not be added to your library. Get it anyway, we won't tell.",
+                                                            Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                } catch (JSONException e) {
+                                    Toast.makeText(MainActivity.this, "This book could " +
+                                                    "not be added to your library. Get it anyway, we won't tell.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
@@ -396,6 +448,15 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     }
 
     //geofencing begins here
+
+
+    public void checkPermissionsAndStartGeofencing() {
+        if (foregroundAndBackgroundLocationPermissionApproved()) {
+            checkDeviceLocationSettingsAndStartGeofence();
+        } else {
+            requestForegroundAndBackgroundLocationPermissions();
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -492,63 +553,50 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
         }).addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-//                addBookGeofences();
+                addBookGeofences();
             }
         });
     }
 
     private final void addBookGeofences() {
-        if (viewModel == null) {
-            Intrinsics.throwUninitializedPropertyAccessException("viewModel");
-        }
-
-        if (!viewModel.geofenceIsActive()) {
-            viewModel = this.viewModel;
-            if (viewModel == null) {
-                Intrinsics.throwUninitializedPropertyAccessException("viewModel");
-            }
-
-            int currentGeofenceIndex = viewModel.nextGeofenceIndex();
-            if (currentGeofenceIndex >= GeofencingConstants.INSTANCE.getNUM_LANDMARKS()) {
-                this.removeGeofences();
-                viewModel = this.viewModel;
-                if (viewModel == null) {
-                    Intrinsics.throwUninitializedPropertyAccessException("viewModel");
-                }
-
-                viewModel.geofenceActivated();
-            } else {
-                LandmarkDataObject currentGeofenceData = GeofencingConstants.INSTANCE.getLANDMARK_DATA()[currentGeofenceIndex];
-
-                Geofence geofence = (new com.google.android.gms.location.Geofence.Builder())
-                        .setRequestId(currentGeofenceData.getId())
-                        .setCircularRegion(currentGeofenceData.getLatLong().latitude, currentGeofenceData.getLatLong().longitude, 100.0F)
-                        .setExpirationDuration(GeofencingConstants.INSTANCE.getGEOFENCE_EXPIRATION_IN_MILLISECONDS())
-                        .setTransitionTypes(1)
-                        .build();
-
-                GeofencingRequest geofencingRequest = (new com.google.android.gms.location.GeofencingRequest.Builder())
-                        .setInitialTrigger(1)
-                        .addGeofence(geofence).build();
-
-                GeofencingClient var10 = this.geofencingClient;
-                if (var10 == null) {
-                    Intrinsics.throwUninitializedPropertyAccessException("geofencingClient");
-                }
-
-                Task var11 = var10.removeGeofences(this.getGeofencePendingIntent());
-                if (var11 != null) {
-                    Task var5 = var11;
-                    boolean var6 = false;
-                    boolean var7 = false;
-                    int var9 = false;
-                    var5.addOnCompleteListener((OnCompleteListener)(new HuntMainActivity$addGeofenceForClue$$inlined$run$lambda$1(this, geofencingRequest, geofence)));
-                }
-
-            }
-        }
+        geofenceList.add(new Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("elliot bay books")
+                .setCircularRegion(
+                        47.614756,
+                        -122.319433,
+                        100
+                )
+                .setExpirationDuration(TimeUnit.HOURS.toMillis(1))
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
+        Log.d("DEBUG", "geofence added to list");
     }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return geofencePendingIntent;
+    }
+
 }
+
 
 
 

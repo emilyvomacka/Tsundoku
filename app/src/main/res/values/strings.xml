@@ -22,4 +22,8 @@
     <string name="hint_email">Enter email</string>
     <string name="log_out">Log out</string>
     <string name="maps">My Bookstores</string>
+    <string name="elliot_bay_books_location">Elliot Bay Books</string>
+    <string name="third_place_books_location">Third Place Books</string>
+    <string name="mercer_st_books_location">Mercer St Books</string>
+    <string name="phinney_books_location">Phinney Books</string>
 </resources>
