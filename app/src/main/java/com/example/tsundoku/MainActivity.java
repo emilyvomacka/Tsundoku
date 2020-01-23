@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnBookL
     private boolean runningQOrLater =
             android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q;
     private @Nullable ScriptGroup.Binding binding;
-    private @Nullable GeofenceViewModel viewModel;
     private GeofencingClient geofencingClient;
     private int REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33;
     private int REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34;

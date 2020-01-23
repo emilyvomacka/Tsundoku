@@ -39,9 +39,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.book_stack)
-                    .setContentTitle("YOU HAVE BOOKS AT HOME")
-                    .setContentText("Might be a good time to check in with your unread book stack?")
+                    .setSmallIcon(R.drawable.book)
+                    .setContentTitle("YOU HAVE BOOKS AT HOME.")
+                    .setContentText("Don't even think about it.")
                     .setPriority(NotificationCompat.PRIORITY_MAX);
 
             NotificationManagerCompat notificationManager =
@@ -49,7 +49,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
             notificationManager.notify(notificationId, builder.build());
             notificationId += 1;
-            Log.d(TAG, "geofence hit");
+            
+
         }
     }
 }
